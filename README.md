@@ -1,36 +1,159 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 嘴替（Zuiti）Web H5 Demo
 
-## Getting Started
+> 版本：v0.1（Demo 方案）  
+> 技术栈：Next.js（App Router）+ TypeScript（单仓库）  
+> 目标：黑客松快速出可演示结果，同时保持工程规范、协作友好
 
-First, run the development server:
+## 1. 项目定位
+
+“嘴替”是一个面向日常沟通的 Web H5 Demo：用户输入一句原话/想法，选择模式（1-5），一次生成多条不同风格的表达，并给出推荐与理由，帮助用户更清晰、更礼貌、更可沟通地表达。
+
+本仓库为**单仓库、单 Next.js 项目**：
+- **前端（浏览器 UI）**：页面与组件渲染
+- **后端/BFF（Next 服务端能力）**：同一项目中的 API 路由（用于参数校验、组装请求、调用模型、做轻量安全过滤与埋点）
+
+## 2. Demo 范围（简化版）
+
+### 2.1 必须实现（Must）
+- 输入一句原话/想法，选择模式 1-5 之一
+- 一次生成：3 条候选 + 1 条推荐（推荐必须来自候选）+ 2-3 条推荐理由
+- 结果可复制；最小反馈闭环（有用/无用 + 原因标签）
+
+### 2.2 不在范围（Out of Scope）
+- 登录注册、账号体系、跨端同步
+- 多轮对话、长期记忆、风格训练
+- 复杂场景库/对象关系选择器
+- 复杂数据库与报表（Demo 允许先用日志或轻量存储）
+
+## 3. 快速开始（3 分钟跑起来）
+
+### 3.1 环境要求
+- Node.js：LTS 版本（建议 18/20）
+
+### 3.2 安装与启动
+
+在项目根目录执行：
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+浏览器打开：
+- http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+常用命令：
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev      # 本地开发
+npm run build    # 生产构建
+npm run start    # 以生产模式启动（需先 build）
+npm run lint     # 代码规范检查
+```
 
-## Learn More
+### 3.3 环境变量（建议）
 
-To learn more about Next.js, take a look at the following resources:
+本地使用 `.env.local`（不提交到仓库），仓库建议提供 `.env.example`（提交）用于说明需要哪些配置。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+常见字段示例（按你们使用的模型服务调整）：
+- `AI_API_KEY`：模型服务密钥
+- `AI_BASE_URL`：可选，自建网关/代理地址
+- `AI_MODEL`：可选，模型名称
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 4. 交互与数据流（端到端）
 
-## Deploy on Vercel
+1) 用户输入文本 + 选择模式 → 点击生成  
+2) 前端请求服务端 API（同仓库内）  
+3) 服务端执行：输入校验 →（可选）内容安全初筛 → 组装模型请求 → 调用模型 → 结果结构化与校验 → 返回前端  
+4) 前端渲染：推荐卡 + 候选卡 + 复制 + 反馈  
+5) 复制/反馈触发埋点或反馈接口（可先落日志）
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+为了 Demo 不翻车，页面建议有清晰的状态机：
+- `idle`：未生成
+- `loading`：生成中
+- `success`：成功展示结果
+- `fail`：生成失败（可重试）
+- `refused`：命中安全规则的拒答（提示原因与替代建议）
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 4.1 API 约定（概念级）
+
+为保持“单仓库、一条链路可演示”，建议把服务端能力收敛到少量接口：
+- `POST /api/generate`：生成候选与推荐（服务端完成输入校验、调用模型、结果校验）
+- `POST /api/track`（可选）：埋点事件上报（也可先只落日志）
+- `POST /api/feedback`（可选）：用户反馈闭环（有用/无用 + 原因标签）
+
+返回结构建议统一为“成功/失败”两类，便于前端状态机稳定处理（不追求复杂错误体系，够用即可）。
+
+## 5. 目录结构与放置规范（按仓库现状 + 推荐扩展位）
+
+当前仓库结构较轻量，核心在 `app/`（页面与路由）：
+
+```
+zuiti/
+  app/
+    layout.tsx         # 全局布局（App Router）
+    page.tsx           # 首页（生成页）
+    globals.css        # 全局样式
+    api/               # （建议新增）BFF/API 路由位置
+  public/              # 静态资源
+  next.config.ts
+  tsconfig.json
+  eslint.config.mjs
+  README.md
+```
+
+随着功能增加，推荐补齐以下目录，让协作更清晰（不复杂，但边界明确）：
+- `components/`：可复用 UI 组件（纯展示优先，减少业务耦合）
+- `lib/`：非 UI 的通用能力与“领域代码”
+  - `lib/ai/`：模型调用封装（统一入口，便于替换/限流/降级）
+  - `lib/validators/`：请求/响应校验（建议使用 schema 校验库，避免前后端“靠约定”）
+  - `lib/safety/`：轻量内容安全规则与拒答策略
+  - `lib/analytics/`：埋点事件名与字段规范
+  - `lib/modes/`：模式文案、tooltip、策略常量
+- `styles/`：如果样式文件变多可独立出来（使用 Tailwind 时也可不建）
+
+放置原则（记住这 3 条就够用）：
+- 页面：放在 `app/**/page.tsx`（负责拼装页面模块与管理页面状态）
+- 组件：放在 `components/**`（只做展示与交互，不做模型请求与复杂逻辑）
+- 业务能力/工具：放在 `lib/**`（可被页面和 API 复用，避免散落在各处）
+
+## 6. 工程化规范（保持“够用且不重”）
+
+### 6.1 TypeScript（默认强约束）
+- 尽量让“外部输入”都有明确校验：用户输入、URL 参数、API 请求体、模型返回值
+- UI 层只处理展示，不在组件里拼接复杂规则或“半业务逻辑”
+
+### 6.2 ESLint（统一代码风格）
+- 执行 `npm run lint` 保持最基本的一致性
+- 合并前尽量确保 lint 通过，减少“看起来像 bug 但其实是风格差异”的沟通成本
+
+### 6.3 环境变量与安全
+- `.env.local` 不提交；仓库只提交 `.env.example`
+- 不在前端暴露密钥；模型调用放在服务端 API 中完成
+
+## 7. Next.js（App Router）简明介绍（够用版）
+
+### 7.1 页面与路由
+- `app/page.tsx` 对应路由 `/`
+- `app/<route>/page.tsx` 对应路由 `/<route>`
+- `app/layout.tsx` 是全局布局，会包裹所有页面
+
+### 7.2 “后端/BFF”在哪里？
+Next.js 支持在同一个项目内提供服务端 API（常用于 Demo 或 BFF）：
+- 这些 API 在服务端执行，可读取环境变量、调用外部服务、做输入/输出校验
+- 前端通过 `fetch` 调用它们，保持“一个仓库、一个启动命令”
+
+### 7.3 为什么适合黑客松 Demo
+- 前后端同仓同语言（TypeScript），协作成本低
+- 路由与部署链路成熟，演示与上线更顺滑
+
+## 8. 常见问题（Troubleshooting）
+
+- 访问不了 `http://localhost:3000`：检查终端是否启动成功、端口是否被占用
+- 构建失败：先执行 `npm run lint`，再检查 Node 版本是否为 LTS
+- “需要密钥/接口报错”：确认 `.env.local` 配置齐全，并且密钥没有放到前端代码里
+
+## 9. 参考
+
+- Next.js 文档：https://nextjs.org/docs
+- Vercel 部署：https://vercel.com/new
