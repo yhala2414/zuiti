@@ -1,6 +1,18 @@
 .main {
-  min-height: 100vh;
-  background-image: radial-gradient(circle at 20% 10%, #ffffff 0, #f3efff 34%, #eef2ff 100%);
+  position: relative;
+  width: 100%;
+  max-width: 390px;
+  min-height: 100dvh;
+  margin: 0 auto;
   padding: 0;
+  overflow-x: hidden;
+
+  background-image: radial-gradient(
+    circle at 20% 10%,
+    #ffffff 0,
+    #f3efff 34%,
+    #eef2ff 100%
+  );
+
   color: #182039;
 }

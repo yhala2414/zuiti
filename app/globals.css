@@ -19,10 +19,14 @@
 }
 
 html {
+  width: 100%;
+  min-height: 100%;
   background: var(--background);
 }
 
 body {
+  width: 100%;
+  min-height: 100%;
   margin: 0;
   overflow-x: hidden;
   background: var(--background);
@@ -48,11 +52,13 @@ textarea {
 .mobile-shell {
   position: relative;
   display: flex;
-  min-height: 100vh;
   width: 100%;
+  max-width: 390px;
+  min-height: 100dvh;
   margin: 0 auto;
   flex-direction: column;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   background:
     radial-gradient(circle at 88% 20%, rgba(220, 211, 255, 0.7), transparent 28%),
     linear-gradient(160deg, #ffffff 0%, #fbfaff 50%, #f5f4ff 100%);
@@ -721,11 +727,11 @@ textarea {
   transform: rotate(18deg);
 }
 
-@media (max-width: 390px) {
+/* @media (max-width: 390px) {
   main {
     padding: 0;
   }
-}
+} */
 
 @media (prefers-reduced-motion: reduce) {
   *,
