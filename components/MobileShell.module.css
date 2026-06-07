@@ -1,11 +1,15 @@
 .main {
+  --phone-width: 375px;
+  --phone-height: 750px;
+
   position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 375px;
-  min-height: 750px;
-  min-height: max(750px, 100dvh);
+  max-width: var(--phone-width);
+  height: min(var(--phone-height), 100dvh);
+  min-height: 0;
+  max-height: var(--phone-height);
   margin: 0 auto;
   overflow-x: hidden;
   overflow-y: auto;
@@ -20,7 +24,9 @@
 
 @media (max-width: 430px) {
   .main {
-    max-width: none;
-    min-height: 100dvh;
+    width: min(100vw, var(--phone-width));
+    max-width: var(--phone-width);
+    height: min(var(--phone-height), 100dvh);
+    max-height: var(--phone-height);
   }
 }
