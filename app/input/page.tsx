@@ -1,64 +1,129 @@
+"use client";
+
+import { Suspense, useEffect, useMemo } from "react";
+import type { CSSProperties } from "react";
+import { TextArea } from "antd-mobile";
+import { useSearchParams } from "next/navigation";
 import { MobileShell } from "@/components/MobileShell";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { StyleCard } from "@/components/StyleCard";
 import { TopBar } from "@/components/TopBar";
-import { styles } from "@/components/content";
+import { scenes, styles } from "@/components/content";
+import { inputPageCopy } from "@/config";
+import { useExpressionFlowStore } from "@/stores/expression-flow-store";
+import { getStyleByIndex, getStyleIndex, isScene } from "@/utils/content-mapping";
+import stylesCss from "./page.module.css";
+
+const textAreaStyle: CSSProperties & { "--color": string } = {
+  "--color": "#30364a",
+};
+
+function InputContent() {
+  const searchParams = useSearchParams();
+  const value = useExpressionFlowStore((state) => state.text);
+  const activeStyle = useExpressionFlowStore((state) => state.style);
+  const setValue = useExpressionFlowStore((state) => state.setText);
+  const setStyle = useExpressionFlowStore((state) => state.setStyle);
+  const storeScene = useExpressionFlowStore((state) => state.scene);
+  const setScene = useExpressionFlowStore((state) => state.setScene);
+
+  useEffect(() => {
+    const sceneKey = searchParams.get("scene");
+    if (isScene(sceneKey)) {
+      setScene(sceneKey);
+    }
+  }, [searchParams, setScene]);
+
+  const scene = useMemo(() => {
+    const sceneKey = storeScene ?? searchParams.get("scene");
+    return scenes.find((item) => item.key === sceneKey);
+  }, [searchParams, storeScene]);
+
+  const canContinue = value.trim().length >= 2;
+
+  return (
+    <MobileShell className={stylesCss.container}>
+      <div className={stylesCss.pageContent}>
+        <TopBar
+          title={inputPageCopy.title}
+          backHref="/"
+          actions={[
+            {
+              label: inputPageCopy.exampleAction,
+              icon: "spark",
+              onClick: () => setValue(inputPageCopy.exampleRawText),
+            },
+            { label: inputPageCopy.clearAction, icon: "trash", onClick: () => setValue("") },
+          ]}
+        />
+
+        <section className={stylesCss.section1}>
+          <div className={stylesCss.labelRow}>
+            <label
+              htmlFor="raw-thought"
+              className={stylesCss.label}
+            >
+              {inputPageCopy.fieldLabel}
+            </label>
+            {scene ? <span>{scene.context}</span> : <span>{inputPageCopy.emptySceneHint}</span>}
+          </div>
+          <div className={`soft-card ${stylesCss.textAreaContainer}`}>
+            <TextArea
+              id="raw-thought"
+              className={stylesCss.textArea}
+              value={value}
+              onChange={setValue}
+              placeholder={inputPageCopy.textAreaPlaceholder}
+              maxLength={300}
+              showCount
+              rows={9}
+              style={textAreaStyle}
+            />
+          </div>
+        </section>
+
+        <section className={stylesCss.section2}>
+          <div className={stylesCss.sectionTitleRow}>
+            <h2 className={stylesCss.sectionTitle}>{inputPageCopy.styleSectionTitle}</h2>
+            <span>{inputPageCopy.styleSectionHint}</span>
+          </div>
+          <div className={stylesCss.cardList}>
+            {styles.map((style, index) => (
+              <StyleCard
+                key={style.key}
+                title={style.title}
+                detail={style.detail}
+                icon={style.icon}
+                active={index === getStyleIndex(activeStyle)}
+                onClick={() => setStyle(getStyleByIndex(index))}
+              />
+            ))}
+          </div>
+        </section>
+
+        <p className={stylesCss.hint}>
+          {canContinue ? inputPageCopy.readyHint : inputPageCopy.blockedHint}
+        </p>
+        <div className={stylesCss.buttonWrapper}>
+          {canContinue ? (
+            <PrimaryButton href="/tone" sparkle>
+              {inputPageCopy.primaryAction}
+            </PrimaryButton>
+          ) : (
+            <button type="button" className="primary-button" disabled>
+              <span>{inputPageCopy.primaryAction}</span>
+            </button>
+          )}
+        </div>
+      </div>
+    </MobileShell>
+  );
+}
 
 export default function InputPage() {
   return (
-    <MobileShell className="px-6 py-6">
-      <TopBar title="对什么人说什么话" backHref="/" />
-
-      <section className="mt-7">
-        <label
-          htmlFor="raw-thought"
-          className="text-[15px] font-black text-[#2b3144]"
-        >
-          你想说的话
-        </label>
-        <div className="soft-card mt-3 min-h-32 px-4 py-4">
-          <textarea
-            id="raw-thought"
-            className="h-24 w-full resize-none bg-transparent text-[14px] font-bold leading-6 text-[#30364a] outline-none placeholder:text-[#a6adbf]"
-            defaultValue="这个活不是我负责的，别老找我。"
-            maxLength={300}
-            aria-describedby="raw-thought-count"
-          />
-          <div
-            id="raw-thought-count"
-            className="text-right text-[12px] font-black text-[#8d94a8]"
-          >
-            18/300
-          </div>
-        </div>
-      </section>
-
-      <section className="mt-9">
-        <h2 className="text-[15px] font-black text-[#2b3144]">选择风格</h2>
-        <div className="-mx-1 mt-4 flex gap-3 overflow-x-auto px-1 pb-3">
-          {styles.map((style, index) => (
-            <StyleCard
-              key={style.title}
-              {...style}
-              active={index === 1}
-            />
-          ))}
-        </div>
-        <div className="mt-3 flex justify-center gap-2" aria-hidden="true">
-          <span className="size-2 rounded-full bg-[#8a86ff]" />
-          <span className="size-2 rounded-full bg-[#d8dcf0]" />
-          <span className="size-2 rounded-full bg-[#d8dcf0]" />
-        </div>
-      </section>
-
-      <p className="mt-auto text-center text-[12px] font-bold text-[#7d8496]">
-        左右滑动，选择你喜欢的风格
-      </p>
-      <div className="mt-7">
-        <PrimaryButton href="/tone" sparkle>
-          开始转换
-        </PrimaryButton>
-      </div>
-    </MobileShell>
+    <Suspense>
+      <InputContent />
+    </Suspense>
   );
 }

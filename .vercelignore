@@ -1,0 +1,12 @@
+.next
+node_modules
+.git
+.vercel
+.venv
+venv
+.trae
+coverage
+build
+dist
+*.log
+.env.local

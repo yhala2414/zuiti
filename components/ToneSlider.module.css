@@ -1,0 +1,126 @@
+.container {
+  border-radius: 18px;
+  padding: 14px 16px 13px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 13px;
+  font-weight: 900;
+  margin: 0;
+}
+
+.value {
+  min-width: 42px;
+  border-radius: 999px;
+  background: linear-gradient(120deg, #9b89ff, #82a9ff);
+  padding: 3px 8px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 900;
+  color: #ffffff;
+  box-shadow: 0 8px 16px rgba(118, 126, 239, 0.22);
+}
+
+.sliderRow {
+  margin-top: 13px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.leftLabel {
+  width: 36px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #727b91;
+}
+
+.sliderWrapper {
+  position: relative;
+  flex: 1;
+}
+
+.sliderWrapper :global(.adm-slider-track) {
+  background: transparent;
+  border-radius: 999px;
+}
+
+.sliderWrapper :global(.adm-slider-fill) {
+  background: transparent !important;
+}
+
+.sliderWrapper :global(.adm-slider) {
+  position: relative;
+  z-index: 2;
+  padding: 0;
+}
+
+.visualTrack {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 5px;
+  border-radius: 999px;
+  background: #e6e7f1;
+  transform: translateY(-50%);
+  overflow: visible;
+}
+
+.visualTrack::before {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: var(--value);
+  height: var(--visual-height);
+  min-height: 3px;
+  max-height: 9px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(189, 157, 255, 0.72), #8b82ff);
+  box-shadow:
+    0 8px 16px rgba(132, 124, 239, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.42);
+  content: "";
+  transform: translateY(-50%);
+  transition:
+    width 160ms ease,
+    height 160ms ease;
+}
+
+.visualTrackDark::before {
+  background: linear-gradient(90deg, #d1ccff, #161b34);
+}
+
+.rightLabel {
+  width: 56px;
+  text-align: right;
+  font-size: 10px;
+  font-weight: 700;
+  color: #727b91;
+}
+
+.thumb {
+  width: 22px;
+  height: 22px;
+  border: 5px solid white;
+  border-radius: 999px;
+  background: #817ef3;
+  box-shadow: 0 5px 14px rgba(76, 82, 129, 0.26);
+}
+
+.thumbDark {
+  background: #151a32;
+}
+
+.hint {
+  margin: 8px 0 0;
+  font-size: 9px;
+  font-weight: 700;
+  color: #9aa2b8;
+}

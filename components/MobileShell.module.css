@@ -1,0 +1,32 @@
+.main {
+  --phone-width: 375px;
+  --phone-height: 750px;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: var(--phone-width);
+  height: min(var(--phone-height), 100dvh);
+  min-height: 0;
+  max-height: var(--phone-height);
+  margin: 0 auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  background:
+    radial-gradient(circle at 78% 12%, rgba(218, 209, 255, 0.62), transparent 24%),
+    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.94), transparent 34%),
+    linear-gradient(160deg, #ffffff 0%, #fbfaff 52%, #f5f7ff 100%);
+
+  color: #182039;
+}
+
+@media (max-width: 430px) {
+  .main {
+    width: min(100vw, var(--phone-width));
+    max-width: var(--phone-width);
+    height: min(var(--phone-height), 100dvh);
+    max-height: var(--phone-height);
+  }
+}

@@ -1,0 +1,146 @@
+.container {
+  min-height: inherit;
+  padding: 16px 18px 24px;
+}
+
+.pageContent {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.section1 {
+  display: grid;
+  gap: 12px;
+}
+
+.labelRow,
+.sectionTitleRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 900;
+  color: #2b3144;
+}
+
+.labelRow span,
+.sectionTitleRow span {
+  min-width: 0;
+  text-align: right;
+  font-size: 9px;
+  font-weight: 800;
+  color: #a0a7bb;
+}
+
+.textAreaContainer {
+  min-height: 218px;
+  padding: 15px 16px 10px;
+  transition:
+    border-color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.textAreaContainer:focus-within {
+  border-color: rgba(139, 140, 255, 0.58);
+  box-shadow:
+    0 22px 48px rgba(102, 111, 172, 0.14),
+    0 0 0 4px rgba(142, 136, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.86);
+}
+
+.textArea {
+  --font-size: 12px;
+  font-weight: 700;
+  line-height: 23px;
+  color: #30364a;
+}
+
+.textArea :global(.adm-text-area-element) {
+  min-height: 166px;
+}
+
+.textArea :global(.adm-text-area-element::placeholder) {
+  color: #a7afc1;
+}
+
+.textAreaContainer :global(.adm-text-area-count) {
+  text-align: right;
+  font-size: 12px;
+  font-weight: 900;
+  color: #8d94a8;
+}
+
+.section2 {
+  display: grid;
+  gap: 12px;
+}
+
+.sectionTitleRow {
+  align-items: center;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 900;
+  color: #2b3144;
+}
+
+.cardList {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 8px 28px 20px 4px;
+  scroll-padding-left: 4px;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.cardList::after {
+  position: absolute;
+  left: 0;
+  right: 28px;
+  bottom: 0;
+  height: 52px;
+  z-index: -1;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(247, 248, 255, 0), rgba(237, 239, 255, 0.7));
+  content: "";
+  pointer-events: none;
+}
+
+.cardList::-webkit-scrollbar {
+  display: none;
+}
+
+.hint {
+  margin: 0;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #7d8496;
+}
+
+.buttonWrapper {
+  margin-top: auto;
+  padding: 0 4px;
+}
+
+.buttonWrapper::after {
+  display: block;
+  margin-top: 11px;
+  color: #a8afc0;
+  content: "AI 将为你生成更合适的表达版本";
+  font-size: 9px;
+  font-weight: 800;
+  text-align: center;
+}

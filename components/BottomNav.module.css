@@ -1,0 +1,35 @@
+.nav {
+  margin-top: auto;
+  border-top: 1px solid rgba(232, 235, 250, 0.86);
+  background-color: rgba(255, 255, 255, 0.62);
+  padding: 6px 8px calc(2px + env(safe-area-inset-bottom));
+  backdrop-filter: blur(18px);
+}
+
+.tabBar {
+  --adm-color-text-secondary: #626b82;
+  --adm-color-primary: #8875ff;
+}
+
+.tabBar :global(.adm-tab-bar-item) {
+  padding: 0;
+}
+
+.tabBar :global(.adm-tab-bar-item-icon) {
+  height: auto;
+}
+
+.tabBar :global(.adm-tab-bar-item-title) {
+  font-size: 9px;
+  font-weight: bold;
+  line-height: inherit;
+}
+
+.tabBar :global(.adm-tab-bar-item-title-with-icon) {
+  margin-top: 2px;
+}
+
+.tabBar :global(.nav-icon) {
+  width: 20px;
+  height: 20px;
+}

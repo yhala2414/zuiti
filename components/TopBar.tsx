@@ -1,43 +1,54 @@
 import Link from "next/link";
+import { topBarCopy } from "@/config";
+import styles from "./TopBar.module.css";
 
 type TopBarProps = {
   title?: string;
   backHref?: string;
+  subtitle?: string;
+  actions?: Array<{
+    label: string;
+    icon?: "spark" | "trash" | "star" | "share" | "reset";
+    onClick?: () => void;
+  }>;
 };
 
-export function TopBar({ title, backHref }: TopBarProps) {
+export function TopBar({ title, backHref, subtitle, actions = [] }: TopBarProps) {
   return (
-    <header className="space-y-5">
-      <div className="flex h-5 items-center justify-between text-[13px] font-black text-[#15192d]">
-        <span>9:41</span>
-        <div className="flex items-center gap-1.5" aria-hidden="true">
-          <span className="signal-bars">
-            <i />
-            <i />
-            <i />
-          </span>
-          <span className="wifi-mark" />
-          <span className="battery-mark" />
-        </div>
-      </div>
-
+    <header className={styles.header}>
       {title ? (
-        <div className="grid grid-cols-[32px_1fr_32px] items-center">
+        <div className={styles.navBar}>
           {backHref ? (
             <Link
               href={backHref}
-              className="flex size-8 items-center justify-start text-3xl leading-none text-[#15192d]"
-              aria-label="返回"
+              className={styles.backButton}
+              aria-label={topBarCopy.backAriaLabel}
             >
               ‹
             </Link>
           ) : (
             <span />
           )}
-          <h1 className="text-center text-[18px] font-black tracking-[-0.01em]">
-            {title}
-          </h1>
-          <span />
+          <div className={styles.titleGroup}>
+            <h1 className={styles.title}>{title}</h1>
+            {subtitle ? <p className={styles.subtitle}>{subtitle}</p> : null}
+          </div>
+          <div className={styles.actions}>
+            {actions.map((action) => (
+              <button
+                key={action.label}
+                type="button"
+                className={styles.actionButton}
+                aria-label={action.label}
+                onClick={action.onClick}
+              >
+                {action.icon ? (
+                  <span className={`${styles.actionIcon} ${styles[action.icon]}`} aria-hidden="true" />
+                ) : null}
+                <span>{action.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
       ) : null}
     </header>

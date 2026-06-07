@@ -1,41 +1,125 @@
-import { DecorativeIcon } from "@/components/DecorativeIcon";
+"use client";
+
+import type { CSSProperties } from "react";
+import { useMemo } from "react";
 import { MobileShell } from "@/components/MobileShell";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { ToneSlider } from "@/components/ToneSlider";
 import { TopBar } from "@/components/TopBar";
+import { tonePageCopy } from "@/config";
+import { defaultSliders, useExpressionFlowStore } from "@/stores/expression-flow-store";
+import styles from "./page.module.css";
 
 export default function TonePage() {
+  const text = useExpressionFlowStore((state) => state.text);
+  const scene = useExpressionFlowStore((state) => state.scene);
+  const sliders = useExpressionFlowStore((state) => state.sliders);
+  const setSlider = useExpressionFlowStore((state) => state.setSlider);
+  const setSliders = useExpressionFlowStore((state) => state.setSliders);
+  const polite = sliders.politeness;
+  const formal = sliders.formality;
+  const distance = sliders.distance;
+  const hasDraft = Boolean(scene && text.trim().length >= 2);
+
+  const preview = useMemo(() => {
+    if (formal > 72) {
+      return tonePageCopy.previewSamples.formalHigh;
+    }
+
+    if (distance < 45) {
+      return tonePageCopy.previewSamples.distanceLow;
+    }
+
+    if (polite > 80) {
+      return tonePageCopy.previewSamples.politenessHigh;
+    }
+
+    return tonePageCopy.previewSamples.default;
+  }, [polite, formal, distance]);
+
+  const radarDotStyle: CSSProperties & {
+    "--x": string;
+    "--y": string;
+  } = {
+    "--x": `${polite}%`,
+    "--y": `${100 - formal}%`,
+  };
+
   return (
-    <MobileShell className="px-6 py-6">
-      <TopBar title="语气仪表盘" backHref="/input" />
+    <MobileShell className={styles.container}>
+      <TopBar
+        title={tonePageCopy.title}
+        subtitle={tonePageCopy.subtitle}
+        backHref="/input"
+        actions={[{ label: tonePageCopy.resetAction, icon: "reset", onClick: () => setSliders(defaultSliders) }]}
+      />
 
-      <section className="soft-card relative mt-7 min-h-52 overflow-hidden px-5 py-5">
-        <h2 className="text-[16px] font-black">表达预览</h2>
-        <div className="mt-5 flex items-center gap-2">
-          <span className="rounded-full bg-[#eadfff] px-3 py-1 text-[12px] font-black text-[#624cb1]">
-            婉拒了当
-          </span>
-          <span className="rounded-full bg-[#f0f1fa] px-3 py-1 text-[12px] font-black text-[#6b7287]">
-            预览
-          </span>
-        </div>
-        <p className="mt-5 max-w-[220px] text-[15px] font-bold leading-7 text-[#252b3f]">
-          这件事我不是负责的同事，建议你联系负责的同事，他会更清楚哦～
-        </p>
-        <div className="absolute bottom-2 right-5">
-          <DecorativeIcon kind="spark" size="hero" />
-        </div>
-      </section>
+      <div className={styles.content}>
+        {!hasDraft ? (
+          <section className={`soft-card ${styles.previewSection}`}>
+            <div className={styles.previewCopy}>
+              <div className={styles.previewHeader}>
+                <h2 className={styles.previewTitle}>{tonePageCopy.missingDraftTitle}</h2>
+                <span>{tonePageCopy.missingDraftBadge}</span>
+              </div>
+              <p className={styles.previewText}>
+                {tonePageCopy.missingDraftDescription}
+              </p>
+            </div>
+          </section>
+        ) : null}
+        <section className={`soft-card ${styles.previewSection}`}>
+          <div className={styles.previewCopy}>
+            <div className={styles.previewHeader}>
+              <h2 className={styles.previewTitle}>{tonePageCopy.previewTitle}</h2>
+              <span>{tonePageCopy.previewBadge}</span>
+            </div>
+            <p className={styles.previewText}>
+              {preview}
+            </p>
+          </div>
+          <div className={styles.previewVisual}>
+            <div className={styles.backgroundRadar} aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </div>
+            <span className={styles.liveDot} style={radarDotStyle} aria-hidden="true" />
+            <span className={styles.previewSpark} aria-hidden="true" />
+          </div>
+        </section>
 
-      <div className="mt-5 space-y-4">
-        <ToneSlider title="礼貌程度" left="直接" right="礼貌" value={76} />
-        <ToneSlider title="正式程度" left="日常" right="正式" value={70} dark />
-        <ToneSlider title="关系距离" left="熟人" right="陌生/上级" value={58} />
+        <div className={styles.sliderContainer}>
+          <ToneSlider
+            title={tonePageCopy.sliders.politeness.title}
+            left={tonePageCopy.sliders.politeness.left}
+            right={tonePageCopy.sliders.politeness.right}
+            value={polite}
+            hint={tonePageCopy.sliders.politeness.hint}
+            onChange={(value) => setSlider("politeness", value)}
+          />
+          <ToneSlider
+            title={tonePageCopy.sliders.formality.title}
+            left={tonePageCopy.sliders.formality.left}
+            right={tonePageCopy.sliders.formality.right}
+            value={formal}
+            hint={tonePageCopy.sliders.formality.hint}
+            onChange={(value) => setSlider("formality", value)}
+          />
+          <ToneSlider
+            title={tonePageCopy.sliders.distance.title}
+            left={tonePageCopy.sliders.distance.left}
+            right={tonePageCopy.sliders.distance.right}
+            value={distance}
+            hint={tonePageCopy.sliders.distance.hint}
+            onChange={(value) => setSlider("distance", value)}
+          />
+        </div>
       </div>
 
-      <div className="mt-auto pt-7">
-        <PrimaryButton href="/results" sparkle>
-          生成结果
+      <div className={styles.buttonWrapper}>
+        <PrimaryButton href={hasDraft ? "/results" : "/input"} sparkle>
+          {hasDraft ? tonePageCopy.generateAction : tonePageCopy.backToInputAction}
         </PrimaryButton>
       </div>
     </MobileShell>

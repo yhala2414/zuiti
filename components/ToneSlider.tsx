@@ -1,31 +1,78 @@
+"use client";
+
+import type { CSSProperties } from "react";
+import { Slider } from "antd-mobile";
+import stylesCss from "./ToneSlider.module.css";
+
 type ToneSliderProps = {
   title: string;
   left: string;
   right: string;
   value: number;
   dark?: boolean;
+  hint?: string;
+  onChange?: (value: number) => void;
 };
 
-export function ToneSlider({ title, left, right, value, dark = false }: ToneSliderProps) {
+type SliderStyle = CSSProperties & {
+  "--fill-color": string;
+  "--track-height": string;
+};
+
+type VisualTrackStyle = CSSProperties & {
+  "--value": string;
+  "--visual-height": string;
+};
+
+export function ToneSlider({
+  title,
+  left,
+  right,
+  value,
+  dark = false,
+  hint,
+  onChange,
+}: ToneSliderProps) {
+  const sliderStyle: SliderStyle = {
+    "--fill-color": "transparent",
+    "--track-height": "22px",
+  };
+
+  const visualTrackStyle: VisualTrackStyle = {
+    "--value": `${value}%`,
+    "--visual-height": `${3 + value * 0.055}px`,
+  };
+
   return (
-    <section className="soft-card px-5 py-4">
-      <h2 className="text-[17px] font-black">{title}</h2>
-      <div className="mt-4 flex items-center gap-4">
-        <span className="w-9 text-[12px] font-bold text-[#727b91]">{left}</span>
-        <div className="slider-track" aria-hidden="true">
-          <span
-            className={dark ? "slider-fill dark" : "slider-fill"}
-            style={{ width: `${value}%` }}
+    <section className={`soft-card ${stylesCss.container}`}>
+      <div className={stylesCss.header}>
+        <h2 className={stylesCss.title}>{title}</h2>
+        <span className={stylesCss.value}>{value}%</span>
+      </div>
+      <div className={stylesCss.sliderRow}>
+        <span className={stylesCss.leftLabel}>{left}</span>
+        <div className={stylesCss.sliderWrapper}>
+          <div
+            className={`${stylesCss.visualTrack} ${dark ? stylesCss.visualTrackDark : ""}`}
+            style={visualTrackStyle}
+            aria-hidden="true"
           />
-          <span
-            className={dark ? "slider-thumb dark" : "slider-thumb"}
-            style={{ left: `${value}%` }}
+          <Slider
+            value={value}
+            onChange={(nextValue) => {
+              if (typeof nextValue === "number") {
+                onChange?.(nextValue);
+              }
+            }}
+            style={sliderStyle}
+            icon={<div className={`${stylesCss.thumb} ${dark ? stylesCss.thumbDark : ""}`} />}
           />
         </div>
-        <span className="w-14 text-right text-[12px] font-bold text-[#727b91]">
+        <span className={stylesCss.rightLabel}>
           {right}
         </span>
       </div>
+      {hint ? <p className={stylesCss.hint}>{hint}</p> : null}
     </section>
   );
 }

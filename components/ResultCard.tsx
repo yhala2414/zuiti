@@ -1,38 +1,95 @@
+import type { CSSProperties } from "react";
+import { resultCardCopy } from "@/config";
+import styles from "./ResultCard.module.css";
+
 type ResultCardProps = {
   label: string;
   text: string;
   tone: "lavender" | "blue" | "pink";
+  icon: "wechat" | "mail" | "face";
+  fit: string;
+  tags: readonly string[];
+  index?: number;
+  onCopy?: () => void;
+  onUseful?: () => void;
+  onRegenerate?: () => void;
+  onSwitchStyle?: () => void;
 };
 
 const toneClass = {
-  lavender: "bg-[#e9ddff] text-[#5a45ad]",
-  blue: "bg-[#dfeaff] text-[#4365a8]",
-  pink: "bg-[#ffd9f1] text-[#a33f88]",
+  lavender: styles.lavender,
+  blue: styles.blue,
+  pink: styles.pink,
 };
 
-export function ResultCard({ label, text, tone }: ResultCardProps) {
+const resultIconClass = {
+  wechat: styles.wechat,
+  mail: styles.mail,
+  face: styles.face,
+};
+
+type ResultStyle = CSSProperties & {
+  "--delay": string;
+};
+
+export function ResultCard({
+  label,
+  text,
+  tone,
+  icon,
+  fit,
+  tags,
+  index = 0,
+  onCopy,
+  onUseful,
+  onRegenerate,
+  onSwitchStyle,
+}: ResultCardProps) {
+  const resultStyle: ResultStyle = {
+    "--delay": `${index * 90}ms`,
+  };
+
   return (
-    <article className="soft-card px-5 py-4">
-      <span
-        className={`inline-flex rounded-full px-3 py-1 text-[12px] font-black ${toneClass[tone]}`}
-      >
-        {label}
-      </span>
-      <p className="mt-4 whitespace-pre-line text-[15px] font-bold leading-7 text-[#22283a]">
+    <article
+      className={`soft-card ${styles.container}`}
+      style={resultStyle}
+    >
+      <header className={styles.header}>
+        <span className={`${styles.iconPill} ${toneClass[tone]}`}>
+          <span className={`${styles.resultIcon} ${resultIconClass[icon]}`} aria-hidden="true" />
+        </span>
+        <div>
+          <span className={`${styles.label} ${toneClass[tone]}`}>
+            {label}
+          </span>
+          <p className={styles.fit}>{fit}</p>
+        </div>
+        <span className={styles.chevron} aria-hidden="true" />
+      </header>
+      <p className={styles.text}>
         {text}
       </p>
-      <div className="mt-5 grid grid-cols-3 gap-2 text-[12px] font-bold text-[#43495e]">
-        <button type="button" className="result-action">
+      <div className={styles.tags} aria-label={resultCardCopy.tagsAriaLabel}>
+        {tags.map((tag) => (
+          <span key={tag}>{tag}</span>
+        ))}
+      </div>
+      <div className={styles.actions}>
+        <button type="button" className="result-action" onClick={onCopy}>
           <span className="action-icon copy" aria-hidden="true" />
-          复制
+          {resultCardCopy.copyAction}
         </button>
-        <button type="button" className="result-action">
+        <button type="button" className="result-action" onClick={onUseful}>
           <span className="action-icon star" aria-hidden="true" />
-          收藏
+          {resultCardCopy.usefulAction}
         </button>
-        <button type="button" className="result-action">
+        <button type="button" className="result-action" onClick={onRegenerate}>
           <span className="action-icon refresh" aria-hidden="true" />
-          再换一版
+          {resultCardCopy.regenerateAction}
+        </button>
+        <button type="button" className="result-action" onClick={onSwitchStyle}>
+          <span className="action-icon switch" aria-hidden="true" />
+          {resultCardCopy.switchStyleAction}
         </button>
       </div>
     </article>
