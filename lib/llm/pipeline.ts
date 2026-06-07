@@ -56,6 +56,16 @@ async function withTimeout<T>(promise: Promise<T>) {
   }
 }
 
+function getModelFailureNote(error: unknown) {
+  if (error instanceof Error) {
+    const status =
+      "status" in error && typeof error.status === "number" ? ` status ${error.status}` : "";
+    return `模型调用失败${status}：${error.name}`;
+  }
+
+  return "模型调用失败：UnknownError";
+}
+
 export async function generateWithLlmOrFallback(
   request: GenerateRequest,
   context: GenerationContext,
@@ -99,7 +109,7 @@ export async function generateWithLlmOrFallback(
 
     return createFallbackResult(request, {
       language: context.language,
-      note: "模型调用失败，已使用本地演示兜底生成。",
+      note: getModelFailureNote(error),
     });
   }
 }
