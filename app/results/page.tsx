@@ -45,18 +45,6 @@ export default function ResultsPage() {
   const requestKey = draft ? createRequestKey(draft) : null;
   const generatedResult = generation.result;
   const successStatus = isSuccessStatus(generation.status) ? generation.status : null;
-  const successCopy =
-    successStatus === "success-fallback"
-      ? {
-          title: resultsPageCopy.successFallbackTitle,
-          description: resultsPageCopy.successFallbackDescription,
-        }
-      : successStatus === "success-model"
-        ? {
-            title: resultsPageCopy.successModelTitle,
-            description: resultsPageCopy.successModelDescription,
-          }
-        : null;
 
   const runGenerate = useCallback(
     async (nextDraft: GenerateDraft) => {
@@ -204,34 +192,6 @@ export default function ResultsPage() {
             <button type="button" className="primary-button" onClick={handleRegenerate}>
               <span>{resultsPageCopy.retryAction}</span>
             </button>
-          </section>
-        ) : null}
-
-        {draft && generatedResult && successCopy && successStatus ? (
-          <section
-            className={`soft-card ${styles.stateCard} ${
-              successStatus === "success-fallback" ? styles.fallbackState : styles.modelState
-            }`}
-          >
-            <div className={styles.stateHeader}>
-              <h2>{successCopy.title}</h2>
-              <span className={styles.stateBadge}>
-                {resultsPageCopy.sourceLabels[generatedResult.meta.source]}
-              </span>
-            </div>
-            <p>{successCopy.description}</p>
-            <div className={styles.metaRow}>
-              <span className={styles.metaPill}>
-                {resultsPageCopy.metaSourceLabel}：{resultsPageCopy.sourceLabels[generatedResult.meta.source]}
-              </span>
-              <span className={styles.metaPill}>
-                {resultsPageCopy.metaLanguageLabel}：
-                {resultsPageCopy.languageLabels[generatedResult.meta.language]}
-              </span>
-            </div>
-            {generatedResult.safetyNotes.length > 0 ? (
-              <p className={styles.metaNote}>{generatedResult.safetyNotes[0]}</p>
-            ) : null}
           </section>
         ) : null}
 

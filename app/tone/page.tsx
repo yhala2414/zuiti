@@ -1,27 +1,36 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { MobileShell } from "@/components/MobileShell";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { ToneSlider } from "@/components/ToneSlider";
 import { TopBar } from "@/components/TopBar";
 import { tonePageCopy } from "@/config";
-import { defaultSliders, useExpressionFlowStore } from "@/stores/expression-flow-store";
+import { getTonePreviewText } from "@/lib/tone/preview";
+import { createRequestKey, defaultSliders, useExpressionFlowStore } from "@/stores/expression-flow-store";
+import { generateExpression } from "@/utils/expression-api";
 import styles from "./page.module.css";
 
 export default function TonePage() {
   const text = useExpressionFlowStore((state) => state.text);
   const scene = useExpressionFlowStore((state) => state.scene);
   const sliders = useExpressionFlowStore((state) => state.sliders);
+  const generation = useExpressionFlowStore((state) => state.generation);
+  const buildDraft = useExpressionFlowStore((state) => state.buildDraft);
   const setSlider = useExpressionFlowStore((state) => state.setSlider);
   const setSliders = useExpressionFlowStore((state) => state.setSliders);
+  const setGenerationLoading = useExpressionFlowStore((state) => state.setGenerationLoading);
+  const setGenerationSuccess = useExpressionFlowStore((state) => state.setGenerationSuccess);
+  const setGenerationError = useExpressionFlowStore((state) => state.setGenerationError);
   const polite = sliders.politeness;
   const formal = sliders.formality;
   const distance = sliders.distance;
   const hasDraft = Boolean(scene && text.trim().length >= 2);
+  const draft = buildDraft();
+  const requestKey = draft ? createRequestKey(draft) : null;
 
-  const preview = useMemo(() => {
+  const fallbackPreview = useMemo(() => {
     if (formal > 72) {
       return tonePageCopy.previewSamples.formalHigh;
     }
@@ -36,6 +45,62 @@ export default function TonePage() {
 
     return tonePageCopy.previewSamples.default;
   }, [polite, formal, distance]);
+
+  const runGenerate = useCallback(
+    async () => {
+      if (!draft) {
+        return;
+      }
+
+      const nextRequestKey = createRequestKey(draft);
+      setGenerationLoading(nextRequestKey);
+      const response = await generateExpression(draft);
+
+      if (response.ok) {
+        setGenerationSuccess(response.data, nextRequestKey);
+        return;
+      }
+
+      setGenerationError(
+        response.code === "SAFETY_REFUSED" ? "refused" : "fail",
+        response.code,
+        response.message,
+      );
+    },
+    [draft, setGenerationError, setGenerationLoading, setGenerationSuccess],
+  );
+
+  useEffect(() => {
+    if (!draft || !requestKey) {
+      return;
+    }
+
+    if (generation.requestKey === requestKey) {
+      const isSettled =
+        generation.status === "loading" ||
+        generation.status === "success-model" ||
+        generation.status === "success-fallback" ||
+        generation.status === "fail" ||
+        generation.status === "refused";
+
+      if (isSettled) {
+        return;
+      }
+    }
+
+    const timerId = window.setTimeout(() => {
+      void runGenerate();
+    }, 350);
+
+    return () => {
+      window.clearTimeout(timerId);
+    };
+  }, [draft, generation.requestKey, generation.status, requestKey, runGenerate]);
+
+  const previewText = getTonePreviewText({
+    fallbackPreview,
+    generatedResult: generation.result,
+  });
 
   const radarDotStyle: CSSProperties & {
     "--x": string;
@@ -75,7 +140,7 @@ export default function TonePage() {
               <span>{tonePageCopy.previewBadge}</span>
             </div>
             <p className={styles.previewText}>
-              {preview}
+              {previewText}
             </p>
           </div>
           <div className={styles.previewVisual}>
