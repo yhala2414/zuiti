@@ -53,37 +53,37 @@ export const expressionStyles = [
     key: "delay" as const,
     title: "先别急",
     icon: "snail" as const,
-    detail: "体面延期",
+    detail: "体面延期，争取时间。",
   },
   {
     key: "refuse" as const,
     title: "婉拒了哈",
     icon: "hourglass" as const,
-    detail: "柔和拒绝",
+    detail: "优雅拒绝，不撕破脸。",
   },
   {
     key: "boundary" as const,
     title: "别甩给我",
     icon: "redirect" as const,
-    detail: "边界清晰",
+    detail: "划清边界，避免背锅。",
   },
   {
     key: "followup" as const,
     title: "该交了吧",
     icon: "bell" as const,
-    detail: "礼貌推进",
+    detail: "礼貌推进，让对方行动。",
   },
   {
     key: "decode" as const,
     title: "翻译一下",
     icon: "translate" as const,
-    detail: "转译语气",
+    detail: "识别潜台词，看懂真实意思。",
   },
   {
     key: "sarcasm" as const,
     title: "阴阳一下",
     icon: "contrast" as const,
-    detail: "微妙反差",
+    detail: "阴阳怪气，但不直接翻车。",
   },
 ] as const;
 

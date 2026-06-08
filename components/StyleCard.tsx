@@ -22,6 +22,7 @@ export function StyleCard({
       type="button"
       className={`style-card group ${active ? "active" : ""}`}
       aria-pressed={active}
+      aria-label={`${title}：${detail}`}
       onClick={onClick}
     >
       <DecorativeIcon kind={icon} size="md" />
