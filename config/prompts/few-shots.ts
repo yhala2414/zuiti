@@ -16,7 +16,7 @@ type PromptStyleFewShotConfig = {
 };
 
 /**
- * Few-shot examples distilled from the six-style prompt library at the repo root.
+ * Few-shot examples distilled into the current prompt config.
  * Keep these examples model-facing only; UI-facing style card copy belongs in config/copy.
  */
 export const promptStyleFewShotConfig: Record<ExpressionStyle, PromptStyleFewShotConfig> = {

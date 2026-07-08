@@ -47,9 +47,6 @@ config/
 - `config/copy/fallback.ts`
   - 模型不可用时的本地兜底表达
   - 这是“给用户看的结果”，虽然和生成有关，但仍属于用户展示文案
-- `config/copy/audit.ts`
-  - 文案迁移审计清单
-  - 用于记录哪些文案已经迁移到 `config/`，通常不是日常产品文案修改入口
 - `config/copy/index.ts`
   - `copy` 子目录统一导出入口
 

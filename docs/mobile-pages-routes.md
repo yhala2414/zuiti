@@ -1,35 +1,58 @@
-# 嘴替移动端页面访问说明
+# Mobile Pages and Routes
 
-## 启动方式
-
-在项目目录 `zuiti/` 下执行：
+## Start
 
 ```bash
 npm install
 npm run dev
 ```
 
-启动后访问：
+Open:
 
 ```text
 http://localhost:3000/
 ```
 
-## 页面路由
+## Viewport Target
 
-| 页面 | 路由 | 用途 |
-| --- | --- | --- |
-| 首页 | `/` | 快速选择沟通场景，进入表达转换流程。 |
-| 输入页 | `/input` | 输入真实想法，并从 6 种风格卡片中选择表达策略。 |
-| 语气仪表盘 | `/tone` | 预览表达，并通过礼貌程度、正式程度、关系距离控制语气。 |
-| 结果页 | `/results` | 展示微信短句版、邮件正式版、当面沟通版三种结果。 |
-
-## 设计尺寸
-
-页面按 iPhone SE 展示尺寸制作：
+The primary manual inspection viewport is:
 
 ```text
 375 x 750
 ```
 
-桌面浏览器访问时，移动端页面会居中展示；使用浏览器设备模式设置为 `375x750` 可查看目标效果。
+Desktop browsers should center the mobile shell. Use browser device mode or an equivalent screenshot/browser tool for visual checks.
+
+## Current Routes
+
+| Page | Route | File | Purpose | Verification focus |
+| --- | --- | --- | --- | --- |
+| Home | `/` | `app/page.tsx` | Product entry, recent history, hot styles, start CTA | Entry actions, recent-history visibility, bottom nav |
+| Input | `/input` | `app/input/page.tsx` | Scene, target, style, raw thought input | Required selections, text limits, query style preset |
+| Tone | `/tone` | `app/tone/page.tsx` | Tone sliders and preview | Slider controls, generated/fallback preview, missing-draft state |
+| Results | `/results` | `app/results/page.tsx` | Three output modes and result actions | Loading, model/fallback success, refused, fail, copy, feedback, favorite, share |
+| History | `/history` | `app/history/page.tsx` | Local recent history and favorites | Empty state, list rendering, favorite/history storage |
+| Profile | `/profile` | `app/profile/page.tsx` | Local MVP profile, preferences, stats | Local-only messaging and navigation |
+
+## API Routes
+
+| API | File | Purpose |
+| --- | --- | --- |
+| `POST /api/generate` | `app/api/generate/route.ts` | Validate request, call use case, return model/fallback/refusal/error result |
+| `POST /api/feedback` | `app/api/feedback/route.ts` | Validate feedback and write lightweight log |
+| `POST /api/track` | `app/api/track/route.ts` | Validate event and write lightweight log |
+
+## Main Flow
+
+```text
+/ -> /input -> /tone -> /results
+```
+
+Supporting routes:
+
+```text
+/history
+/profile
+```
+
+The main flow depends on Zustand state. Direct visits to `/tone` or `/results` must render a missing-draft or recovery state rather than pretending generation succeeded.
