@@ -11,7 +11,40 @@
   min-height: 0;
   flex: 1;
   flex-direction: column;
-  gap: 14px;
+  gap: 11px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.content::-webkit-scrollbar {
+  display: none;
+}
+
+.contextCard {
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+.contextCard > span {
+  color: #8c84ef;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.contextCard div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.contextCard strong {
+  border-radius: 999px;
+  background: rgba(137, 139, 255, 0.1);
+  padding: 5px 9px;
+  color: #4d5570;
+  font-size: 10px;
+  font-weight: 900;
 }
 
 .backgroundRadar {
@@ -175,6 +208,31 @@
   min-height: 0;
   flex-direction: column;
   gap: 10px;
+}
+
+.quickToneSection {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 1px 14px 5px 1px;
+  scrollbar-width: none;
+}
+
+.quickToneSection::-webkit-scrollbar {
+  display: none;
+}
+
+.quickToneSection button {
+  min-height: 34px;
+  flex: none;
+  border: 1px solid rgba(226, 229, 247, 0.95);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 0 12px;
+  color: #686ed2;
+  font-size: 11px;
+  font-weight: 900;
+  box-shadow: 0 10px 22px rgba(93, 101, 151, 0.09);
 }
 
 .buttonWrapper {

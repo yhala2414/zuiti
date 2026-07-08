@@ -1,5 +1,5 @@
-import { apiErrorCopy } from "@/config";
 import type { GenerateDraft, GenerateResult } from "@/stores/expression-flow-store";
+import { postJson } from "@/utils/api-client";
 
 type ApiSuccess<T> = {
   ok: true;
@@ -27,28 +27,6 @@ type TrackPayload = {
   event: string;
   payload?: Record<string, unknown>;
 };
-
-async function postJson<T>(url: string, payload: unknown): Promise<T> {
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
-
-  const data = (await response.json().catch(() => null)) as T | null;
-
-  if (!response.ok && data === null) {
-    return {
-      ok: false,
-      code: "NETWORK_ERROR",
-      message: apiErrorCopy.networkError,
-    } as T;
-  }
-
-  return data as T;
-}
 
 export function generateExpression(draft: GenerateDraft) {
   return postJson<GenerateApiResponse>("/api/generate", draft);

@@ -10,6 +10,7 @@ type TopBarProps = {
     label: string;
     icon?: "spark" | "trash" | "star" | "share" | "reset";
     onClick?: () => void;
+    active?: boolean;
   }>;
 };
 
@@ -40,6 +41,7 @@ export function TopBar({ title, backHref, subtitle, actions = [] }: TopBarProps)
                 type="button"
                 className={styles.actionButton}
                 aria-label={action.label}
+                aria-pressed={action.active}
                 onClick={action.onClick}
               >
                 {action.icon ? (

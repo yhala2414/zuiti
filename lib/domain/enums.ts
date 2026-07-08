@@ -14,6 +14,24 @@ export type ExpressionStyle = (typeof expressionStyles)[number];
 export const outputModes = ["wechat", "email", "spoken"] as const;
 export type OutputMode = (typeof outputModes)[number];
 
+export const targets = [
+  "mentor",
+  "peer",
+  "admin",
+  "manager",
+  "colleague",
+  "cross",
+  "client",
+  "friend",
+  "partner",
+  "stranger",
+  "gov",
+  "school_admin",
+  "service",
+  "institution",
+] as const;
+export type TargetId = (typeof targets)[number];
+
 export const operations = ["generate", "regenerate", "edit"] as const;
 export type Operation = (typeof operations)[number];
 

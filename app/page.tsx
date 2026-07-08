@@ -1,18 +1,27 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import { BottomNav } from "@/components/BottomNav";
 import { DecorativeIcon } from "@/components/DecorativeIcon";
 import { MobileShell } from "@/components/MobileShell";
 import { PrimaryButton } from "@/components/PrimaryButton";
-import { SceneCard } from "@/components/SceneCard";
-import { scenes, styles as toneStyles } from "@/components/content";
+import { styles as toneStyles } from "@/components/content";
 import { homePageCopy } from "@/config";
 import { useExpressionFlowStore } from "@/stores/expression-flow-store";
+import {
+  getLatestRecentHistoryItem,
+  subscribeRecentHistory,
+} from "@/utils/recent-history";
 import styles from "./page.module.css";
 
+function getRecentSnapshot() {
+  return JSON.stringify(getLatestRecentHistoryItem());
+}
+
 export default function Home() {
-  const setScene = useExpressionFlowStore((state) => state.setScene);
   const setStyle = useExpressionFlowStore((state) => state.setStyle);
+  const recentSnapshot = useSyncExternalStore(subscribeRecentHistory, getRecentSnapshot, () => "null");
+  const latestRecent = JSON.parse(recentSnapshot) as ReturnType<typeof getLatestRecentHistoryItem>;
 
   return (
     <MobileShell className={styles.container}>
@@ -20,7 +29,7 @@ export default function Home() {
         <div className={styles.topRow}>
           <span className={styles.topLabel}>{homePageCopy.topLabel}</span>
           <a
-            href="/results"
+            href="/profile"
             className={styles.profileButton}
             aria-label={homePageCopy.profileAriaLabel}
           >
@@ -52,34 +61,22 @@ export default function Home() {
           </div>
         </section>
 
-        <section className={styles.gridSection}>
-          {scenes.map((scene) => (
-            <SceneCard
-              key={scene.key}
-              title={scene.title}
-              subtitle={scene.subtitle}
-              href={scene.href}
-              icon={scene.icon}
-              context={scene.context}
-              onClick={() => setScene(scene.key)}
-            />
-          ))}
-        </section>
-
-        <section className={styles.recentSection}>
-          <div className={styles.sectionHeader}>
-            <h2>{homePageCopy.recentSectionTitle}</h2>
-            <a href="/results">{homePageCopy.recentSectionAction}</a>
-          </div>
-          <a className={`soft-card ${styles.recentCard}`} href="/results">
-            <DecorativeIcon kind="spark" size="sm" />
-            <div>
-              <strong>{homePageCopy.recentCardTitle}</strong>
-              <span>{homePageCopy.recentCardSubtitle}</span>
+        {latestRecent ? (
+          <section className={styles.recentSection}>
+            <div className={styles.sectionHeader}>
+              <h2>{homePageCopy.recentSectionTitle}</h2>
+              <a href="/history">{homePageCopy.recentSectionAction}</a>
             </div>
-            <span className={styles.recentMeta}>{homePageCopy.recentCardMeta}</span>
-          </a>
-        </section>
+            <a className={`soft-card ${styles.recentCard}`} href="/results">
+              <DecorativeIcon kind="spark" size="sm" />
+              <div>
+                <strong>{latestRecent.originalText}</strong>
+                <span>{latestRecent.summary}</span>
+              </div>
+              <span className={styles.recentMeta}>{homePageCopy.recentCardMeta}</span>
+            </a>
+          </section>
+        ) : null}
 
         <section className={styles.hotSection}>
           <h2>{homePageCopy.hotSectionTitle}</h2>
@@ -88,9 +85,8 @@ export default function Home() {
               <a
                 key={style.title}
                 className={styles.hotItem}
-                href="/input?scene=work"
+                href={`/input?style=${style.key}`}
                 onClick={() => {
-                  setScene("work");
                   setStyle(style.key);
                 }}
               >
@@ -102,7 +98,7 @@ export default function Home() {
         </section>
 
         <div className={styles.buttonWrapper}>
-          <PrimaryButton href="/input?scene=work" sparkle onClick={() => setScene("work")}>
+          <PrimaryButton href="/input" sparkle>
             {homePageCopy.primaryAction}
           </PrimaryButton>
         </div>

@@ -6,15 +6,29 @@ import { MobileShell } from "@/components/MobileShell";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { ToneSlider } from "@/components/ToneSlider";
 import { TopBar } from "@/components/TopBar";
+import { scenes, styles as styleOptions, targetOptionsByScene } from "@/components/content";
 import { tonePageCopy } from "@/config";
+import { getContextDefaultSliders, minInputTextLength } from "@/lib/domain/defaults";
 import { getTonePreviewText } from "@/lib/tone/preview";
-import { createRequestKey, defaultSliders, useExpressionFlowStore } from "@/stores/expression-flow-store";
+import {
+  createRequestKey,
+  defaultSliders,
+  useExpressionFlowStore,
+  type GenerateDraft,
+  type GenerationStatus,
+} from "@/stores/expression-flow-store";
 import { generateExpression } from "@/utils/expression-api";
 import styles from "./page.module.css";
+
+function isSuccessStatus(status: GenerationStatus): status is "success-model" | "success-fallback" {
+  return status === "success-model" || status === "success-fallback";
+}
 
 export default function TonePage() {
   const text = useExpressionFlowStore((state) => state.text);
   const scene = useExpressionFlowStore((state) => state.scene);
+  const target = useExpressionFlowStore((state) => state.target);
+  const style = useExpressionFlowStore((state) => state.style);
   const sliders = useExpressionFlowStore((state) => state.sliders);
   const generation = useExpressionFlowStore((state) => state.generation);
   const buildDraft = useExpressionFlowStore((state) => state.buildDraft);
@@ -26,12 +40,87 @@ export default function TonePage() {
   const polite = sliders.politeness;
   const formal = sliders.formality;
   const distance = sliders.distance;
-  const hasDraft = Boolean(scene && text.trim().length >= 2);
-
-  const hasMountedRef = useRef(false);
-
+  const hasDraft = Boolean(scene && target && style && text.trim().length >= minInputTextLength);
   const draft = buildDraft();
   const requestKey = draft ? createRequestKey(draft) : null;
+  const sceneLabel = scene ? scenes.find((item) => item.key === scene)?.title : null;
+  const targetLabel = scene && target
+    ? targetOptionsByScene[scene].find((item) => item.key === target)?.title
+    : null;
+  const styleLabel = style ? styleOptions.find((item) => item.key === style)?.title : null;
+
+  const runGenerate = useCallback(
+    async (nextDraft: GenerateDraft) => {
+      const nextRequestKey = createRequestKey(nextDraft);
+      setGenerationLoading(nextRequestKey);
+      const response = await generateExpression(nextDraft);
+
+      if (response.ok) {
+        setGenerationSuccess(response.data, nextRequestKey);
+        return;
+      }
+
+      setGenerationError(
+        response.code === "SAFETY_REFUSED" ? "refused" : "fail",
+        response.code,
+        response.message,
+      );
+    },
+    [setGenerationError, setGenerationLoading, setGenerationSuccess],
+  );
+
+  useEffect(() => {
+    if (!draft || !requestKey) {
+      return;
+    }
+
+    if (isSuccessStatus(generation.status) && generation.requestKey === requestKey) {
+      return;
+    }
+
+    if (generation.status === "loading" && generation.requestKey === requestKey) {
+      return;
+    }
+
+    if (
+      (generation.status === "fail" || generation.status === "refused") &&
+      generation.requestKey === requestKey
+    ) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      void runGenerate(draft);
+    }, 500);
+
+    return () => window.clearTimeout(timer);
+  }, [draft, generation.requestKey, generation.status, requestKey, runGenerate]);
+
+  const handleQuickTone = (key: (typeof tonePageCopy.quickTones)[number]["key"]) => {
+    if (key === "softer") {
+      setSliders({
+        ...sliders,
+        politeness: Math.min(100, sliders.politeness + 12),
+        distance: Math.max(0, sliders.distance - 6),
+      });
+      return;
+    }
+
+    if (key === "formal") {
+      setSliders({
+        ...sliders,
+        formality: Math.min(100, sliders.formality + 14),
+        politeness: Math.min(100, sliders.politeness + 6),
+      });
+      return;
+    }
+
+    setSliders({
+      ...sliders,
+      distance: Math.min(100, sliders.distance + 14),
+      formality: Math.min(100, sliders.formality + 5),
+    });
+  };
 
   const fallbackPreview = useMemo(() => {
     if (formal > 72) {
@@ -49,71 +138,40 @@ export default function TonePage() {
     return tonePageCopy.previewSamples.default;
   }, [polite, formal, distance]);
 
-  const runGenerate = useCallback(
-    async () => {
-      if (!draft) {
-        return;
-      }
-
-      const nextRequestKey = createRequestKey(draft);
-      setGenerationLoading(nextRequestKey);
-      const response = await generateExpression(draft);
-
-      if (response.ok) {
-        setGenerationSuccess(response.data, nextRequestKey);
-        return;
-      }
-
-      setGenerationError(
-        response.code === "SAFETY_REFUSED" ? "refused" : "fail",
-        response.code,
-        response.message,
-      );
-    },
-    [draft, setGenerationError, setGenerationLoading, setGenerationSuccess],
-  );
-
-  // Auto-trigger AI generation on mount when draft is ready
-  useEffect(() => {
-    if (!hasMountedRef.current) {
-      hasMountedRef.current = true;
-      if (hasDraft && generation.status === "idle") {
-        void runGenerate();
-      }
-    }
-  }, [hasDraft, generation.status, runGenerate]);
-
-  useEffect(() => {
+  const previewText = useMemo(() => {
     if (!draft || !requestKey) {
-      return;
+      return tonePageCopy.missingDraftDescription;
     }
 
-    if (generation.requestKey === requestKey) {
-      const isSettled =
-        generation.status === "loading" ||
-        generation.status === "success-model" ||
-        generation.status === "success-fallback" ||
-        generation.status === "fail" ||
-        generation.status === "refused";
-
-      if (isSettled) {
-        return;
-      }
+    if (generation.status === "loading" && generation.requestKey === requestKey) {
+      return tonePageCopy.previewLoading;
     }
 
-    const timerId = window.setTimeout(() => {
-      void runGenerate();
-    }, 350);
+    if (generation.status === "refused" && generation.requestKey === requestKey) {
+      return generation.errorMessage ?? tonePageCopy.previewRefused;
+    }
 
-    return () => {
-      window.clearTimeout(timerId);
-    };
-  }, [draft, generation.requestKey, generation.status, requestKey, runGenerate]);
+    if (generation.status === "fail" && generation.requestKey === requestKey) {
+      return generation.errorMessage ?? tonePageCopy.previewFailed;
+    }
 
-  const previewText = getTonePreviewText({
+    if (isSuccessStatus(generation.status) && generation.requestKey === requestKey && generation.result) {
+      return getTonePreviewText({
+        fallbackPreview,
+        generatedResult: generation.result,
+      });
+    }
+
+    return tonePageCopy.previewPending;
+  }, [
+    draft,
     fallbackPreview,
-    generatedResult: generation.result,
-  });
+    generation.errorMessage,
+    generation.requestKey,
+    generation.result,
+    generation.status,
+    requestKey,
+  ]);
 
   const radarDotStyle: CSSProperties & {
     "--x": string;
@@ -129,10 +187,25 @@ export default function TonePage() {
         title={tonePageCopy.title}
         subtitle={tonePageCopy.subtitle}
         backHref="/input"
-        actions={[{ label: tonePageCopy.resetAction, icon: "reset", onClick: () => setSliders(defaultSliders) }]}
+        actions={[
+          {
+            label: tonePageCopy.resetAction,
+            icon: "reset",
+            onClick: () => setSliders(scene ? getContextDefaultSliders(scene, target) : defaultSliders),
+          },
+        ]}
       />
 
       <div className={styles.content}>
+        <section className={`soft-card ${styles.contextCard}`}>
+          <span>{tonePageCopy.contextLabel}</span>
+          <div>
+            <strong>{sceneLabel ?? "未选场景"}</strong>
+            <strong>{targetLabel ?? "未选对象"}</strong>
+            <strong>{styleLabel ?? "未选风格"}</strong>
+          </div>
+        </section>
+
         {!hasDraft ? (
           <section className={`soft-card ${styles.previewSection}`}>
             <div className={styles.previewCopy}>
@@ -168,6 +241,13 @@ export default function TonePage() {
         </section>
 
         <div className={styles.sliderContainer}>
+          <section className={styles.quickToneSection} aria-label={tonePageCopy.quickToneTitle}>
+            {tonePageCopy.quickTones.map((quickTone) => (
+              <button key={quickTone.key} type="button" onClick={() => handleQuickTone(quickTone.key)}>
+                {quickTone.label}
+              </button>
+            ))}
+          </section>
           <ToneSlider
             title={tonePageCopy.sliders.politeness.title}
             left={tonePageCopy.sliders.politeness.left}

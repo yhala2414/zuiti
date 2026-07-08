@@ -5,7 +5,7 @@ import {
   maxInputTextLength,
   minInputTextLength,
 } from "@/lib/domain/defaults";
-import { expressionStyles, operations, outputModes, scenes } from "@/lib/domain/enums";
+import { expressionStyles, operations, outputModes, scenes, targets } from "@/lib/domain/enums";
 
 const ToneSlidersSchema = z.object({
   politeness: z.coerce.number().int().min(0).max(100),
@@ -20,6 +20,7 @@ export const GenerateRequestSchema = z.object({
     .min(minInputTextLength, "text is too short")
     .max(maxInputTextLength, "text is too long"),
   scene: z.enum(scenes),
+  target: z.enum(targets).optional(),
   style: z.enum(expressionStyles),
   sliders: ToneSlidersSchema.default(defaultToneSliders),
   outputModes: z.array(z.enum(outputModes)).min(1).default(defaultOutputModes),

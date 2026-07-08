@@ -33,3 +33,8 @@
   width: 20px;
   height: 20px;
 }
+
+.disabledIcon {
+  opacity: 0.42;
+  filter: grayscale(0.65);
+}

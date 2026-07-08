@@ -1,234 +1,134 @@
-# 话到嘴边 - 反向 PRD
+# 话到嘴边 产品 PRD
 
-## 1. 文档说明
+## 1. Product Positioning
 
-这是一份基于当前仓库实现与既有产品描述整理出的轻量反向 PRD。
+`话到嘴边` 是一个面向年轻人的场景表达转换器。它帮助用户把脑子里真实、直接、混乱、不好意思说出口的话，转成适合具体对象、具体场景发送、开口、汇报、拒绝、求助、解释或争取权益的表达版本。
 
-它的目标不是输出一份传统意义上的完整商业产品文档，而是为当前项目补充一份能同时给人和 AI 快速理解的产品说明，帮助阅读仓库的人在不深入翻代码的情况下，迅速建立对产品定位、目标用户、核心流程、主要功能和当前实现边界的认知。
+它不是通用 AI 写作工具，也不是聊天机器人。核心价值是降低年轻人在不对等关系中的表达成本和沟通风险。
 
-当前项目阶段为移动端 Demo / 原型版本，已经具备完整主流程和页面表达，但 AI 生成链路仍处于待接入或待扩展状态，因此本文件同时描述产品意图与当前实现状态。
+## 2. Target Users
 
-## 2. 产品名称
+- 学生：与导师、老师、辅导员、同学、学长学姐沟通。
+- 职场新人：与领导、前辈、HR、甲方、同事沟通。
+- 社交新人：与朋友、陌生人、合作方、活动主办方沟通。
+- 正式事务用户：与学校行政、政府窗口、社区、机构等正式对象沟通。
 
-话到嘴边
+用户共性：知道自己想表达什么，但在高压力、关系不对等、需要拿捏分寸的时刻，需要快速得到更稳妥的说法。
 
-## 3. 一句话定位
+## 3. Current MVP Flow
 
-话到嘴边是一款面向年轻人的场景表达转换器，帮助用户把脑子里真实、直接、混乱、不好意思说出口的话，转成更适合具体对象、具体场景发送、开口、汇报、拒绝、求助、解释或争取权益的表达版本。
+```text
+Home
+  -> Input: scene + target + style + raw thought
+  -> Tone: politeness + formality + distance
+  -> Results: wechat + email + spoken
+  -> History/Profile: local MVP continuation
+```
 
-## 4. 核心价值
+Current routes:
 
-产品的核心价值不是教用户“装会说话”，而是降低年轻人在不对等关系中的表达成本和沟通风险。
+| Page | Route | Purpose |
+| --- | --- | --- |
+| 首页 | `/` | 产品入口、最近使用、热门风格、开始转换 |
+| 输入页 | `/input` | 选择场景、对象、风格，输入真实想法 |
+| 语气页 | `/tone` | 调整礼貌程度、正式程度、关系距离，并展示预览 |
+| 结果页 | `/results` | 展示三类输出，支持复制、反馈、收藏、分享、再润色、换风格 |
+| 历史页 | `/history` | 本地历史记录和收藏记录 |
+| 我的页 | `/profile` | 本地偏好、统计和 MVP 个人页 |
 
-它解决的不是“不会说话”本身，而是下面这些更真实的问题：
+## 4. Product Contract
 
-- 明明知道自己想表达什么，但不知道怎样说更稳妥。
-- 怕语气太硬得罪人，太软又表达不清。
-- 在老师、领导、HR、陌生合作方、正式机构面前，容易卡壳。
-- 用户需要的是低成本可直接使用的表达辅助，不是自己重新组织复杂 Prompt。
+### Scenes
 
-## 5. 目标用户
+- `student` - 学生沟通
+- `work` - 职场沟通
+- `social` - 社交沟通
+- `formal` - 正式事务
 
-### 5.1 学生
+### Targets
 
-适用于和导师、老师、辅导员、同学、学长学姐沟通的场景，比如请假、解释、催推进、求助、拒绝额外任务等。
+Targets are selected after scene selection and represent the communication counterpart, such as teacher, peer, leader, colleague, client, friend, partner, stranger, or institution-facing roles. Current target IDs live in `lib/domain/enums.ts` and the display mapping lives in `config/copy/content.ts`.
 
-### 5.2 职场新人
+### Styles
 
-适用于和领导、前辈、HR、甲方、同事沟通的场景，比如划清职责、申请时间、礼貌拒绝、跟进任务、说明情况等。
+- `delay` - 先别急：体面延期，争取时间。
+- `refuse` - 婉拒了哈：优雅拒绝，不撕破脸。
+- `boundary` - 别甩给我：划清边界，避免背锅。
+- `followup` - 该交了吧：礼貌推进，让对方行动。
+- `decode` - 翻译一下：识别潜台词，看懂真实意思。
+- `sarcasm` - 阴阳一下：保留一点态度，但不能攻击或升级冲突。
 
-### 5.3 社交新人
+### Tone Sliders
 
-适用于和大佬、陌生人、合作方、活动主办方沟通的场景，比如初次联系、自我介绍、推进合作、表达边界、提出请求等。
+- `politeness` - 礼貌程度
+- `formality` - 正式程度
+- `distance` - 关系距离
 
-### 5.4 正式事务用户
+Range: `0-100`.
 
-适用于和学校行政、政府窗口、社区、机构等正式对象沟通的场景，比如咨询、申诉、解释、提交材料、催办进度等。
+### Output Modes
 
-### 5.5 用户共性
+- `wechat` - 微信/IM 短句版
+- `email` - 邮件/书面正式版
+- `spoken` - 当面/语音沟通版
 
-这类用户通常不是不会表达，而是在高压力、关系不对等、需要拿捏分寸的时刻，需要一个能快速提供更稳妥说法的工具。
+## 5. Current Behavior
 
-## 6. 核心使用场景
+The current MVP supports:
 
-产品主要覆盖以下四类沟通方向：
+- Home hot style entry and blank flow entry.
+- Scene and target selection.
+- Style selection with validated query preset.
+- Raw text validation using shared limits.
+- Tone preview based on generated result when available, otherwise local preview.
+- Server-side generation through `/api/generate`.
+- Deterministic fallback when model configuration or model call fails.
+- Generation metadata: `meta.source` distinguishes `model` and `fallback`; `meta.language` records resolved output language.
+- Copy, feedback, tracking, sharing fallback, favorite toggle, local recent history, history route, and profile route.
 
-- 学生沟通：与老师、同学、辅导员等对象交流。
-- 职场沟通：与同事、领导、HR、合作方交流。
-- 社交沟通：与朋友、陌生人、主办方、合作方交流。
-- 正式事务：与行政、机构、窗口类对象交流。
+## 6. Storage and Write Paths
 
-在当前项目中，这四类场景已经被设计为首页入口，用于帮助用户在一开始就快速建立默认语气预期。
+Current MVP write paths are intentionally lightweight:
 
-## 7. 产品形态
+- Current flow state: Zustand store.
+- Recent history: browser local storage through `utils/recent-history.ts`.
+- Favorites: browser local storage through `utils/recent-history.ts`.
+- Preferences/statistics: local MVP storage keys only.
+- Feedback: `POST /api/feedback` with lightweight logging.
+- Tracking: `POST /api/track` with lightweight logging.
 
-当前产品形态是一个移动端单流程表达转换工具，用户通过以下链路完成一次表达优化：
+No database, login, cloud sync, or long-term memory is part of the current scope.
 
-1. 选择沟通场景。
-2. 输入原始想法。
-3. 选择表达风格。
-4. 调整语气参数。
-5. 查看多个结果版本。
+## 7. Non Goals
 
-这条链路强调的是“低门槛输入 + 可控风格转换 + 多结果输出”，而不是开放式聊天问答。
+Do not add these without an approved spec:
 
-## 8. 核心功能设计
+- Generic chatbot mode.
+- Generic writing platform.
+- Login, accounts, or cross-device sync.
+- Full database persistence.
+- Long-term user memory.
+- Vector search/RAG.
+- Independent backend service.
+- Complex Agent architecture.
+- Admin/reporting platform.
 
-### 8.1 一句话嘴替
+## 8. UX Principles
 
-这是产品的基础能力，也是最核心的价值点。
+- Users should not need to write prompts.
+- Product copy should be practical, direct, and scenario-specific.
+- Results must be directly usable, not abstract advice.
+- The tool should reduce conflict risk, not intensify it.
+- `sarcasm` may be lightly pointed, but must not become insulting, threatening, or escalatory.
+- User-visible success must correspond to a state/storage/API/log write path or be clearly staged.
 
-用户输入一句真实原话，系统根据场景和表达策略，将其转化为更适合发出去、说出口或写出来的版本。
+## 9. AI Context Notes
 
-示例：
+For product questions, this file is the only current PRD. Historical PRDs, old Trae specs, and old root-level planning docs are not product authority.
 
-- 原话：这个活不是我负责的，别老找我。
-- 转换后：这个部分目前不在我的负责范围内。为了避免信息传递出错，建议你直接和负责这块的同事确认。如果需要我补充我这边已有的信息，我可以配合。
+For implementation details, use:
 
-设计要求：
-
-- 不能只给一个答案。
-- 应提供多个版本，方便用户比较、挑选和复制。
-- 结果要兼顾礼貌、边界、目标达成和可用性。
-
-### 8.2 场景卡片
-
-用户并不擅长写 Prompt，真正需要的是低成本入口。
-
-因此产品不是让用户自己描述“请帮我把这句话变得礼貌一点”，而是先通过场景卡片告诉系统“我现在是在跟谁说话”。
-
-当前项目中已经存在四类场景入口：
-
-- 学生沟通
-- 职场沟通
-- 社交沟通
-- 正式事务
-
-每类场景都带有默认语气提示，用于帮助用户快速进入对应语境。
-
-### 8.3 风格卡片
-
-在场景之外，产品还提供六种可直接点击的表达风格，让用户不用自己写复杂提示词。
-
-六种风格分别是：
-
-1. 先别急
-2. 婉拒了哈
-3. 别甩给我
-4. 该交了吧
-5. 翻译一下
-6. 阴阳一下
-
-它们对应的产品语义分别为：
-
-- 先别急：体面延期，争取时间。
-- 婉拒了哈：优雅拒绝，不撕破脸。
-- 别甩给我：划清边界，避免背锅。
-- 该交了吧：礼貌推进，让对方行动。
-- 翻译一下：识别潜台词，看懂真实意思。
-- 阴阳一下：阴阳怪气，但不直接翻车。
-
-风格卡片的价值在于把抽象 AI 能力包装成用户一眼就懂、可以直接点选的产品语言。
-
-### 8.4 语气仪表盘
-
-为了避免用户觉得结果完全不可控，产品提供语气仪表盘，让表达风格可以被可视化微调。
-
-当前设定包含三个滑杆：
-
-- 礼貌程度：直接 -> 礼貌
-- 正式程度：日常 -> 正式
-- 关系距离：熟人 -> 陌生 / 上级
-
-它的作用不是替代风格选择，而是在风格确定后做二次微调，让用户更有掌控感。
-
-### 8.5 输出结果
-
-结果页默认给出三个版本，分别覆盖用户最常见的使用环境：
-
-- 微信短句版
-- 邮件正式版
-- 当面沟通版
-
-这样设计的原因是，同一个意图在不同媒介中的表达方式并不相同。用户真正需要的是“可直接拿去用的版本”，而不是一个抽象答案。
-
-## 9. 页面流程
-
-### 9.1 首页
-
-首页承担产品定位展示和场景分流作用，帮助用户快速理解“这是一个帮我把不好开口的话换种说法的工具”，同时通过场景入口开始使用流程。
-
-### 9.2 输入页
-
-输入页用于承接用户原话输入，并提供六种风格卡片供选择。
-
-这一页的核心目标是降低使用门槛，让用户只需要把心里真实的话打出来即可，不要求用户先进行语言美化。
-
-### 9.3 语气仪表盘页
-
-仪表盘页用于表达结果的中间预览和参数微调，通过礼貌、正式、关系距离三个维度，帮助用户找到更适合自己的说法。
-
-### 9.4 结果页
-
-结果页展示三种不同场景下的输出结果，支持用户对比、挑选、复制和再次调整。
-
-当前版本还包含收藏、分享、再次调语气、换一种风格等后续动作入口，体现产品继续迭代的空间。
-
-## 10. 当前版本的实现映射
-
-为了帮助 AI 或新加入的协作者快速对上仓库结构，当前主要实现可对应为：
-
-- 首页：`app/page.tsx`
-- 输入页：`app/input/page.tsx`
-- 语气仪表盘：`app/tone/page.tsx`
-- 结果页：`app/results/page.tsx`
-- 场景、风格、结果等静态内容：`components/content.ts`
-- 路由说明：`docs/mobile-pages-routes.md`
-
-当前仓库采用 Next.js 16 + React 19 + `antd-mobile`，并使用 CSS Modules 管理样式。
-
-## 11. 当前版本边界
-
-当前版本已经具备完整的前端演示流程，但仍属于可展示、可验证的原型阶段。
-
-已具备：
-
-- 4 个核心页面与完整路由流程。
-- 场景选择、风格选择、语气调节、结果展示。
-- 三种结果版本的结构化输出形式。
-- 适合移动端展示的视觉化原型。
-
-暂未完全具备或仍待接入：
-
-- 真实 AI 生成链路。
-- 后端服务与 Prompt 编排逻辑。
-- 用户历史记录、云端收藏、账号体系。
-- 更细粒度的结果对比、复制反馈、二次追问机制。
-
-## 12. 适合作为 AI 上下文的原因
-
-这份文档适合作为当前仓库的 AI 产品上下文，原因在于它明确回答了几个关键问题：
-
-- 这个项目是什么：一个表达转换工具，而不是泛化聊天机器人。
-- 这个项目服务谁：在不对等沟通关系中需要表达辅助的年轻用户。
-- 这个项目如何工作：场景 -> 输入 -> 风格 -> 语气 -> 多版本输出。
-- 这个项目当前做到哪：前端 Demo 已成型，AI 生成能力待接入或扩展。
-- 这个项目重点是什么：低门槛、强场景、可控语气、多结果表达。
-
-## 13. 后续可扩展方向
-
-如果后续继续开发，这个产品可以优先往以下方向扩展：
-
-- 接入真实 LLM 生成能力，让结果从静态示例升级为动态输出。
-- 增加复制、重写、再柔和一点、再强硬一点等二次操作。
-- 提供原话与优化版差异说明，帮助用户理解“为什么这样改”。
-- 建立历史记录和收藏能力，沉淀高频表达模板。
-- 补充更多场景包，比如催款、维权、求职、租房、请假、申诉等。
-
-## 14. 总结
-
-话到嘴边的本质不是“帮用户说漂亮话”，而是帮助用户在高压力、高顾虑、高风险的沟通场景中，更低成本地表达真实意图。
-
-当前仓库已经完成了这一产品思路的前端化表达，并通过场景卡片、风格卡片、语气仪表盘和三版本结果输出，搭建出了完整的核心体验框架。
-
-这份反向 PRD 旨在把这套产品认知沉淀为仓库内的统一说明，方便后续的人和 AI 在理解项目时快速建立共同上下文。
+- Backend/BFF: `docs/backend-architecture.md`
+- Frontend structure: `docs/frontend-architecture.md`
+- Route map: `docs/mobile-pages-routes.md`
+- Copy and prompts: `config/README.md`

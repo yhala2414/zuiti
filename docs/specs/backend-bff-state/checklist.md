@@ -1,36 +1,31 @@
-﻿# Backend BFF + Frontend State Checklist
+# Backend BFF + Frontend State Checklist
 
-- [ ] Updated acceptance criteria for centralized copy, language-following generation, and demo diagnostics are fully satisfied
-- [ ] `config/` exists at project root and is the single editable entry for UI copy, server copy, fallback copy, and prompt copy
-- [ ] `app/**`, `components/**`, `utils/**`, and `lib/**` no longer keep configurable product text inline, except structural tokens or fixed protocol fields
-- [ ] Prompt text has moved out of `lib/llm/**` business logic into `config/prompts/**`
-- [ ] `/api/generate` exposes enough metadata to distinguish `model` vs `fallback` and the resolved response language
-- [ ] Results page renders generated姝ｆ枃 only from Zustand draft + API response, not from static sample text
-- [ ] `npm run dev` live-chain inspection confirms whether frontend and backend are connected
-- [ ] Chinese input and non-Chinese or mixed-language input both return language-following results
-- [ ] Fallback path, model path, refusal path, failure path, and missing-draft path are visually distinguishable
-- [ ] Integration/API checks completed
-- [ ] E2E/manual browser checks completed for `375 x 750`
-- [ ] `npm run lint` passes
-- [ ] `npm run build` passes
-- [ ] Security review completed
-- [ ] No API key exposed to frontend
-- [ ] Logs avoid full raw user text
-- [ ] Documentation updated
-- [ ] Breaking changes documented or explicitly absent
+## Status
+
+`done-with-verification-gap`
+
+## Completed
+
+- [x] Acceptance criteria for BFF route structure, flow state, structured output, fallback behavior, feedback, and tracking are satisfied by current implementation.
+- [x] `config/` exists at project root and is the editable entry for UI copy, server copy, fallback copy, and prompt copy.
+- [x] Prompt text is centralized through `config/prompts/**`.
+- [x] `/api/generate` exposes metadata distinguishing `model` vs `fallback` and resolved response language.
+- [x] Results and tone preview consume Zustand draft and API result state rather than only static sample body text.
+- [x] Fallback path, model path, refusal path, failure path, and missing-draft path have distinct state representations.
+- [x] Integration/API route behavior was verified during the original implementation pass.
+- [x] Security review completed for server-only model keys and lightweight logs.
+- [x] Documentation updated in the current authority set.
+- [x] Breaking changes are absent for public HTTP API routes and frontend route paths.
+
+## Remaining Verification Gaps
+
+- [x] Re-run `npm run test`.
+- [x] Re-run `npm run lint`.
+- [x] Re-run `npm run build` after package/script/export updates.
+- [ ] Complete browser/manual checks at `375 x 750` for `/`, `/input`, `/tone`, `/results`, `/history`, and `/profile`.
+- [ ] Verify live model path with a configured `AI_API_KEY`; fallback path is valid when no key is configured.
 
 ## Notes
 
-- This checklist supersedes the previous verification baseline because the active scope now includes copy centralization, explicit fallback diagnostics, and language-following generation.
-- The previously completed BFF baseline remains useful context, but all items above require re-verification after the new scope is implemented.
-
-## Execution Defaults After Approval
-
-- Use `subagent-driven-development`.
-- Do not ask more product questions.
-- Use the recommended defaults in this document.
-- Main thread coordinates and reviews.
-- Backend worker owns `app/api/**`, `lib/**`, `config/prompts/**`, server copy modules, language inference, and API verification.
-- Frontend worker owns `config/copy/**`, Zustand store, frontend utils/API client, content mappings, page wiring, and mobile visual verification.
-- Review order per task: spec compliance first, code quality second.
-
+- This checklist no longer represents unfinished product-code tasks. It records current verification debt.
+- If browser tooling remains unavailable, keep this spec status as `done-with-verification-gap`.

@@ -1,22 +1,26 @@
 # Codex SDD Constitution
 
-This repository uses Spec Driven Development (SDD) to make Codex behave closer to Trae Spec Mode. The agent must treat this file as the project constitution for non-trivial work.
+This repository uses Spec Driven Development (SDD) to keep AI-assisted work scoped, reviewable, and verifiable.
 
 ## 1. Core Rule
 
-Do not start implementation immediately after a feature, refactor, migration, architecture, or user-facing workflow request.
+Do not start implementation immediately after a feature, refactor, migration, architecture, documentation-system, or user-facing workflow request.
 
-The required workflow is:
+Required workflow:
 
-`Specify -> Clarify -> Plan -> Tasks -> Checklist / Analyze -> Implement -> Verify`
+```text
+Specify -> Clarify -> Plan -> Tasks -> Checklist / Analyze -> Implement -> Verify
+```
 
 Code is the final artifact, not the first artifact.
 
 ## 2. Canonical Directories
 
-New Codex SDD artifacts must live under:
+New Codex SDD artifacts live under:
 
-`docs/specs/<feature-name>/`
+```text
+docs/specs/<feature-name>/
+```
 
 Each feature directory must contain:
 
@@ -25,32 +29,23 @@ Each feature directory must contain:
 - `tasks.md`
 - `checklist.md`
 
-The old `.trae/specs/` directory is historical reference material for Trae Spec Mode. Read it when useful for style or migration context, but do not create new Codex SDD artifacts there unless the user explicitly asks for Trae compatibility.
+Do not create new specs under `.trae/specs/`. That directory is historical/local reference only and is not a current acceptance source.
 
-If a Spec Kit command, tool, or template creates output under a default `specs/` directory, move or mirror the result into `docs/specs/<feature-name>/` and update internal references.
+## 3. Spec Status
 
-## 3. Codex Skills
+Every spec must be represented in `docs/specs/README.md` with one status:
 
-Project-local Spec Kit style skills are installed under `.agents/skills`:
+- `active` - current implementation authority.
+- `done` - implemented and verified.
+- `done-with-verification-gap` - implemented, but a documented verification gap remains.
+- `stale` - no longer reliable as current context.
+- `superseded` - replaced by another spec or document.
 
-- `$speckit-constitution`: initialize or update this SDD constitution.
-- `$speckit-specify`: create or update `spec.md`.
-- `$speckit-clarify`: resolve open product and technical questions before design.
-- `$speckit-plan`: create or update `design.md`.
-- `$speckit-tasks`: create or update `tasks.md`.
-- `$speckit-checklist`: create or update `checklist.md`.
-- `$speckit-analyze`: validate consistency across all SDD artifacts.
-- `$speckit-implement`: implement only tasks defined in `tasks.md`.
+Agents must not treat `stale` or `superseded` specs as implementation authority.
 
-When a user says SDD, Spec Mode, Trae Spec Mode, `/spec`, `/plan`, `/tasks`, `/implement`, or asks to implement an existing SDD plan, use the matching skill.
+## 4. Required Sections
 
-## 4. Specification Phase
-
-Create or update:
-
-`docs/specs/<feature-name>/spec.md`
-
-Required sections:
+`spec.md` must include:
 
 - Problem
 - Goal
@@ -59,15 +54,7 @@ Required sections:
 - Acceptance Criteria
 - Edge Cases
 
-The spec must describe observable behavior and success criteria. Do not write production code during this phase.
-
-## 5. Design Phase
-
-Create or update:
-
-`docs/specs/<feature-name>/design.md`
-
-Required sections:
+`design.md` must include:
 
 - Architecture
 - Data Flow
@@ -79,17 +66,7 @@ Required sections:
 - Risks
 - Alternatives Considered
 
-For this project, design must follow existing Next.js App Router, React 19, CSS Modules, and `antd-mobile` patterns unless the spec explicitly requires a change.
-
-Before designing or implementing Next.js behavior, read the relevant document in `node_modules/next/dist/docs/`. This project uses Next.js 16.2.7 and may differ from older Next.js behavior.
-
-## 6. Task Phase
-
-Create or update:
-
-`docs/specs/<feature-name>/tasks.md`
-
-Required task groups:
+`tasks.md` must include:
 
 - P0: Critical setup and blockers
 - P1: Backend or data tasks
@@ -97,27 +74,19 @@ Required task groups:
 - P3: Testing and verification tasks
 - P4: Documentation and cleanup tasks
 
-Tasks must be ordered by dependency. Each task must be independently verifiable. If a group does not apply, keep the heading and write `None for this feature.`
+`checklist.md` must include:
 
-## 7. Checklist Phase
+- Acceptance criteria satisfied
+- Unit tests added or explicitly not applicable
+- Integration tests added or explicitly not applicable
+- E2E/manual browser checks completed or explicitly recorded as a verification gap
+- `npm run lint` passes, unless explicitly not required by `docs/verification-guide.md`
+- `npm run build` passes, unless explicitly not required by `docs/verification-guide.md`
+- Security review completed
+- Documentation updated
+- Breaking changes documented or explicitly absent
 
-Create or update:
-
-`docs/specs/<feature-name>/checklist.md`
-
-Minimum checklist:
-
-- [ ] Acceptance criteria satisfied
-- [ ] Unit tests added or explicitly not applicable
-- [ ] Integration tests added or explicitly not applicable
-- [ ] E2E/manual browser checks completed when UI changes are involved
-- [ ] `npm run lint` passes
-- [ ] `npm run build` passes
-- [ ] Security review completed
-- [ ] Documentation updated
-- [ ] Breaking changes documented or explicitly absent
-
-## 8. Review Gate
+## 5. Review Gate
 
 Before implementation:
 
@@ -125,34 +94,29 @@ Before implementation:
 2. Verify `design.md` exists.
 3. Verify `tasks.md` exists.
 4. Verify `checklist.md` exists.
-5. Verify `tasks.md` maps back to acceptance criteria.
-6. Verify implementation will not touch work outside the documented scope.
+5. Verify `docs/specs/README.md` marks the spec `active`.
+6. Verify `tasks.md` maps back to acceptance criteria.
+7. Verify implementation will not touch work outside documented scope.
 
-If any artifact is missing or inconsistent, stop and generate or repair the SDD artifacts first.
+If any artifact is missing, stale, inconsistent, or misleading, stop and repair the SDD artifact before implementation.
 
-## 9. Implementation Rules
+## 6. Implementation Rules
 
-Implementation must follow `tasks.md` sequentially unless dependency order requires a different documented order.
+- Implement only tasks defined in `tasks.md`.
+- Mark completed tasks only when the corresponding work and evidence exist.
+- Update `checklist.md` only when an item is proven.
+- If code reality already satisfies a task, mark it as completed with a short evidence note.
+- If verification is unavailable, do not pretend it passed; record `done-with-verification-gap`.
 
-Do not implement tasks that are not defined in `tasks.md`.
+## 7. Verification Rules
 
-After completing a task:
+Use `docs/verification-guide.md` to select checks.
 
-- Mark the task complete in `tasks.md`.
-- Update `checklist.md` when a checklist item is proven.
-- Run the smallest relevant verification before moving to broader checks.
+For active spec work, the feature checklist is binding. If the checklist asks for lint/build/browser/API checks, either run them or document why they could not run.
 
-## 10. Verification Rules
+For UI work, default visual verification includes `375 x 750`.
 
-Before declaring completion, run:
-
-- `npm run lint`
-- `npm run build`
-- Any feature-specific checks listed in `checklist.md`
-
-For UI work, use a browser or screenshot workflow to inspect the changed routes. For this mobile-oriented project, default visual verification should include a `375x750` viewport and any additional viewport listed in the active spec.
-
-## 11. Refactoring Rules
+## 8. Refactoring Rules
 
 For refactors, the spec must also document:
 
@@ -164,8 +128,15 @@ For refactors, the spec must also document:
 
 Do not modify production code until those sections are present.
 
-## 12. Large Task Rules
+## 9. Documentation Lifecycle
 
-If the estimated work touches more than five files, changes more than 300 lines, or crosses multiple subsystems, decompose it into multiple feature directories or task groups.
+Delete or replace misleading docs rather than keeping them as unmarked historical material.
 
-Never execute large changes as a single undocumented step.
+Allowed document states:
+
+- Current authority: referenced by `AGENTS.md`, `README.md`, or `docs/specs/README.md`.
+- Reference: clearly marked as non-binding.
+- Local/tool scaffold: clearly marked as not project authority.
+- Deleted: use this for duplicate, stale, or misleading documents.
+
+When deleting a document, update all references in the same change.

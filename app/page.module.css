@@ -150,6 +150,14 @@
   color: #8b93aa;
 }
 
+.recentEmpty {
+  border-style: dashed;
+}
+
+.recentEmpty .recentMeta {
+  color: #7462d4;
+}
+
 .iconWrapper {
   position: relative;
   z-index: 1;

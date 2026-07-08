@@ -1,12 +1,18 @@
 "use client";
 
 import { create } from "zustand";
+import {
+  getContextDefaultSliders,
+  minInputTextLength,
+  sceneDefaultSliders,
+} from "@/lib/domain/defaults";
 import type {
   ExpressionStyle,
   GenerateResult,
   Operation,
   OutputMode,
   Scene,
+  TargetId,
   ToneSliders,
 } from "@/lib/domain/enums";
 
@@ -16,6 +22,7 @@ export type {
   Operation,
   OutputMode,
   Scene,
+  TargetId,
   ToneSliders,
 } from "@/lib/domain/enums";
 
@@ -30,6 +37,7 @@ export type GenerationStatus =
 export type GenerateDraft = {
   text: string;
   scene: Scene;
+  target: TargetId;
   style: ExpressionStyle;
   sliders: ToneSliders;
   outputModes: OutputMode[];
@@ -51,11 +59,15 @@ type GenerationState = {
 type ExpressionFlowState = {
   sessionId: string;
   scene: Scene | null;
+  target: TargetId | null;
   text: string;
-  style: ExpressionStyle;
+  style: ExpressionStyle | null;
   sliders: ToneSliders;
   generation: GenerationState;
   setScene: (scene: Scene) => void;
+  setTarget: (target: TargetId | null) => void;
+  applySceneDefaults: (scene: Scene) => void;
+  applyContextDefaults: (scene: Scene, target: TargetId) => void;
   setText: (text: string) => void;
   setStyle: (style: ExpressionStyle) => void;
   setSlider: (key: keyof ToneSliders, value: number) => void;
@@ -67,11 +79,7 @@ type ExpressionFlowState = {
   buildDraft: (operation?: Operation) => GenerateDraft | null;
 };
 
-export const defaultSliders: ToneSliders = {
-  politeness: 76,
-  formality: 58,
-  distance: 62,
-};
+export const defaultSliders: ToneSliders = sceneDefaultSliders.work;
 
 const outputModes: OutputMode[] = ["wechat", "email", "spoken"];
 
@@ -88,6 +96,7 @@ export function createRequestKey(draft: GenerateDraft) {
     text: draft.text.trim(),
     scene: draft.scene,
     style: draft.style,
+    target: draft.target,
     sliders: draft.sliders,
     outputModes: draft.outputModes,
     operation: draft.operation,
@@ -97,8 +106,9 @@ export function createRequestKey(draft: GenerateDraft) {
 export const useExpressionFlowStore = create<ExpressionFlowState>((set, get) => ({
   sessionId: createSessionId(),
   scene: null,
+  target: null,
   text: "",
-  style: "boundary",
+  style: null,
   sliders: defaultSliders,
   generation: {
     status: "idle",
@@ -107,7 +117,45 @@ export const useExpressionFlowStore = create<ExpressionFlowState>((set, get) => 
     errorMessage: null,
     requestKey: null,
   },
-  setScene: (scene) => set({ scene }),
+  setScene: (scene) => {
+    set((state) => ({
+      scene,
+      target: scene === state.scene ? state.target : null,
+      generation: scene === state.scene ? state.generation : { ...state.generation, status: "idle" },
+    }));
+  },
+  setTarget: (target) => {
+    set((state) => ({
+      target,
+      sliders: state.scene && target ? getContextDefaultSliders(state.scene, target) : state.sliders,
+      generation: target === state.target ? state.generation : { ...state.generation, status: "idle" },
+    }));
+  },
+  applySceneDefaults: (scene) => {
+    set((state) => ({
+      scene,
+      target: scene === state.scene ? state.target : null,
+      style: state.style,
+      sliders: sceneDefaultSliders[scene],
+      generation:
+        scene === state.scene &&
+        state.sliders === sceneDefaultSliders[scene]
+          ? state.generation
+          : { ...state.generation, status: "idle" },
+    }));
+  },
+  applyContextDefaults: (scene, target) => {
+    set((state) => ({
+      scene,
+      target,
+      style: state.style,
+      sliders: getContextDefaultSliders(scene, target),
+      generation:
+        scene === state.scene && target === state.target
+          ? state.generation
+          : { ...state.generation, status: "idle" },
+    }));
+  },
   setText: (text) => {
     set((state) => ({
       text,
@@ -182,13 +230,14 @@ export const useExpressionFlowStore = create<ExpressionFlowState>((set, get) => 
     const state = get();
     const text = state.text.trim();
 
-    if (!state.scene || text.length === 0) {
+    if (!state.scene || !state.target || !state.style || text.length < minInputTextLength) {
       return null;
     }
 
     return {
       text,
       scene: state.scene,
+      target: state.target,
       style: state.style,
       sliders: state.sliders,
       outputModes,

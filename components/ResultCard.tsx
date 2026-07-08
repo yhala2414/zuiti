@@ -1,4 +1,6 @@
-import type { CSSProperties } from "react";
+"use client";
+
+import { useState, type CSSProperties } from "react";
 import { resultCardCopy } from "@/config";
 import styles from "./ResultCard.module.css";
 
@@ -14,6 +16,7 @@ type ResultCardProps = {
   onUseful?: () => void;
   onRegenerate?: () => void;
   onSwitchStyle?: () => void;
+  usefulActive?: boolean;
 };
 
 const toneClass = {
@@ -44,7 +47,9 @@ export function ResultCard({
   onUseful,
   onRegenerate,
   onSwitchStyle,
+  usefulActive = false,
 }: ResultCardProps) {
+  const [expanded, setExpanded] = useState(false);
   const resultStyle: ResultStyle = {
     "--delay": `${index * 90}ms`,
   };
@@ -64,9 +69,17 @@ export function ResultCard({
           </span>
           <p className={styles.fit}>{fit}</p>
         </div>
-        <span className={styles.chevron} aria-hidden="true" />
+        <button
+          type="button"
+          className={`${styles.expandButton} ${expanded ? styles.expanded : ""}`}
+          onClick={() => setExpanded((value) => !value)}
+          aria-expanded={expanded}
+        >
+          {expanded ? resultCardCopy.collapseAction : resultCardCopy.expandAction}
+          <span className={styles.chevron} aria-hidden="true" />
+        </button>
       </header>
-      <p className={styles.text}>
+      <p className={`${styles.text} ${expanded ? styles.textExpanded : ""}`}>
         {text}
       </p>
       <div className={styles.tags} aria-label={resultCardCopy.tagsAriaLabel}>
@@ -79,9 +92,14 @@ export function ResultCard({
           <span className="action-icon copy" aria-hidden="true" />
           {resultCardCopy.copyAction}
         </button>
-        <button type="button" className="result-action" onClick={onUseful}>
+        <button
+          type="button"
+          className={`result-action ${usefulActive ? styles.actionActive : ""}`}
+          onClick={onUseful}
+          aria-pressed={usefulActive}
+        >
           <span className="action-icon star" aria-hidden="true" />
-          {resultCardCopy.usefulAction}
+          {usefulActive ? resultCardCopy.usefulActiveAction : resultCardCopy.usefulAction}
         </button>
         <button type="button" className="result-action" onClick={onRegenerate}>
           <span className="action-icon refresh" aria-hidden="true" />

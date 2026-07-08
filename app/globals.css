@@ -142,6 +142,25 @@ textarea {
   transform: translateY(-1px);
 }
 
+.primary-button:disabled,
+.primary-button[aria-disabled="true"] {
+  cursor: not-allowed;
+  background: linear-gradient(100deg, #c8ccd8 0%, #b6bccd 100%);
+  box-shadow:
+    0 10px 22px rgba(112, 120, 143, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  filter: grayscale(0.16) saturate(0.72);
+  opacity: 0.72;
+  transform: none;
+  animation: none;
+}
+
+.primary-button:disabled::after,
+.primary-button[aria-disabled="true"]::after {
+  display: none;
+  animation: none;
+}
+
 .scene-card {
   display: flex;
   min-height: 78px;
