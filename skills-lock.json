@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "project-collaboration-operating-system": {
+      "source": "yhala2414/ai-collaboration-operating-system",
+      "sourceType": "github",
+      "skillPath": "skills/project-collaboration-operating-system/SKILL.md",
+      "computedHash": "d05ac9ccfa8aebf9cb316a987e011991723f171e4f078674340180e473b994f4"
+    }
+  }
+}

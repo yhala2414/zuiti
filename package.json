@@ -7,12 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "npm run test:p0 && npm run test:p1 && npm run test:p2 && npm run test:prd-v1.1 && npm run test:tone",
+    "test": "npm run test:flow && npm run test:interaction && npm run test:history && npm run test:contract && npm run test:tone",
     "test:all": "npm run test",
-    "test:p0": "node --test tests/p0-regression.test.mjs",
-    "test:p1": "node --test tests/p1-regression.test.mjs",
-    "test:p2": "node --test tests/p2-regression.test.mjs",
-    "test:prd-v1.1": "node --test tests/prd-v1_1-regression.test.mjs",
+    "test:flow": "node --test tests/flow-safety-regression.test.mjs",
+    "test:interaction": "node --test tests/interaction-regression.test.mjs",
+    "test:history": "node --test tests/history-navigation-regression.test.mjs",
+    "test:contract": "node --test tests/product-contract-regression.test.mjs",
     "test:tone": "tsc tests/tone-preview.test.ts lib/tone/preview.ts lib/domain/enums.ts --target ES2020 --module commonjs --moduleResolution node --esModuleInterop --skipLibCheck --outDir .next/test-dist --noEmit false && node --test .next/test-dist/tests/tone-preview.test.js"
   },
   "dependencies": {

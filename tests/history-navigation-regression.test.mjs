@@ -33,7 +33,7 @@ test("home page renders local recent history when available and hides empty hist
   assert.doesNotMatch(home, /recentEmpty/);
 });
 
-test("bottom navigation routes all PRD v1.1 sections", () => {
+test("bottom navigation routes all current product sections", () => {
   const bottomNav = read("components/BottomNav.tsx");
   const copy = read("config/copy/components.ts");
 

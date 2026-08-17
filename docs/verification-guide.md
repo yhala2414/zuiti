@@ -2,18 +2,16 @@
 
 ## Purpose
 
-This guide maps change types to the smallest useful verification set. Use it before claiming completion.
+Use the smallest checks that prove the changed surface works. Verification follows behavior and interfaces, not document volume. Do not add a framework merely to satisfy process.
 
-Do not add new verification frameworks just to satisfy process. Use existing scripts first.
-
-## Existing Commands
+## Commands
 
 ```bash
-npm run test
-npm run test:p0
-npm run test:p1
-npm run test:p2
-npm run test:prd-v1.1
+npm test
+npm run test:flow
+npm run test:interaction
+npm run test:history
+npm run test:contract
 npm run test:tone
 npm run lint
 npm run build
@@ -23,50 +21,42 @@ npm run build
 
 | Change type | Required checks |
 | --- | --- |
-| Documentation-only, no links deleted | Static read/review; mention no runtime checks needed |
-| Documentation deletion/rename | Static reference search for deleted names; inspect updated entrypoints |
-| `package.json` scripts | `npm run test`; `npm run lint`; consider `npm run build` |
-| Config exports or TypeScript imports | `npm run lint`; `npm run build` |
-| UI route/page/component behavior | Relevant regression tests; `npm run lint`; browser/manual check at `375 x 750` when available |
-| BFF/API/validator/use-case behavior | Relevant API/regression checks; `npm run lint`; `npm run build` |
-| Prompt/copy/fallback changes | Relevant regression tests; manual copy review; `npm run lint` |
-| Active SDD spec implementation | Feature checklist plus the checks listed in `tasks.md` |
+| Documentation only | Static review and link/reference checks |
+| Documentation deletion or rename | Search for deleted names and inspect updated entrypoints |
+| Tests or package scripts | `npm test`, `npm run lint`, and usually `npm run build` |
+| Config exports or TypeScript imports | Relevant tests, `npm run lint`, `npm run build` |
+| Copy, prompt, or fallback content | Relevant regression tests, manual copy review, `npm run lint` |
+| UI route, page, component, or style behavior | Relevant tests, `npm run lint`, browser/manual check at `375 x 750` when available |
+| BFF, validator, use-case, output, or API contract | Relevant tests/request checks, `npm run lint`, `npm run build` |
+| Collaboration or authority changes | Verify read order, authority precedence, local/formal separation, and absence of stale references |
 
-## Static Reference Checks
+## Static Checks
 
-After deleting or renaming docs, run a targeted search for old names.
+After deleting or renaming files, commands, routes, or exports, run a targeted `rg` search for the old names. Expected result: no formal references remain. Ignored temporary reports may describe historical names when clearly marked non-authoritative.
 
-Example:
-
-```bash
-rg "old-file-name|old-heading|old-export"
-```
-
-Expected result: no formal references to deleted files. Historical audit docs may mention prior names only when clearly describing past state.
+For documentation entrypoints, confirm every Markdown link from README and AGENTS resolves to an existing file.
 
 ## Browser Checks
 
-Default viewport:
+Default viewport: `375 x 750`.
 
-```text
-375 x 750
-```
+For affected flows, check:
 
-Check affected pages for:
+- routes render without a page-level error;
+- primary content is not clipped or overlapped;
+- navigation and required controls work;
+- loading, success, fallback, refused, error, and missing-draft states remain distinguishable where applicable;
+- user-visible success produces a state, storage, API, event, or log result;
+- browser console/network failures that affect visible behavior are reported.
 
-- no clipped primary text
-- no overlapping controls
-- correct loading/error/refused/success state
-- route navigation works
-- user-visible success has a write path
-
-If browser tooling is unavailable, state that clearly and run static/regression checks instead. Mark the related spec `done-with-verification-gap` when appropriate.
+One-off browser scripts, screenshots, traces, and logs stay outside the tracked team documentation layer, normally under ignored `.local-docs/` or a temporary tool directory.
 
 ## Completion Report
 
-Every completion summary should include:
+Before claiming completion, report:
 
-- Files created, modified, deleted.
-- Commands run and results.
-- Skipped checks with reasons.
-- Remaining verification gaps.
+- created, modified, deleted, and moved files;
+- commands run and their current results;
+- browser/manual evidence when required;
+- skipped checks and reasons;
+- remaining warnings, limitations, or verification gaps.

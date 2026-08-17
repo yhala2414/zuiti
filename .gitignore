@@ -54,3 +54,7 @@ next-env.d.ts
 
 #ide
 .trae/specs
+
+# workspace-local collaboration material
+/.local-docs/
+/COLLABORATION-AUDIT-TEMP.md

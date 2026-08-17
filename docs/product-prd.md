@@ -128,7 +128,6 @@ For product questions, this file is the only current PRD. Historical PRDs, old T
 
 For implementation details, use:
 
-- Backend/BFF: `docs/backend-architecture.md`
-- Frontend structure: `docs/frontend-architecture.md`
-- Route map: `docs/mobile-pages-routes.md`
+- Routes, frontend, BFF, storage, and styling: `docs/architecture.md`
+- Verification: `docs/verification-guide.md`
 - Copy and prompts: `config/README.md`
