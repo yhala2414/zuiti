@@ -15,6 +15,7 @@ npm run test:contract
 npm run test:tone
 npm run lint
 npm run build
+npm audit --omit=dev
 ```
 
 ## Verification Matrix
@@ -24,6 +25,7 @@ npm run build
 | Documentation only | Static review and link/reference checks |
 | Documentation deletion or rename | Search for deleted names and inspect updated entrypoints |
 | Tests or package scripts | `npm test`, `npm run lint`, and usually `npm run build` |
+| Dependency or lockfile changes | Relevant tests, `npm run lint`, `npm run build`, and `npm audit --omit=dev` |
 | Config exports or TypeScript imports | Relevant tests, `npm run lint`, `npm run build` |
 | Copy, prompt, or fallback content | Relevant regression tests, manual copy review, `npm run lint` |
 | UI route, page, component, or style behavior | Relevant tests, `npm run lint`, browser/manual check at `375 x 750` when available |

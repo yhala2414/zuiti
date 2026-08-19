@@ -34,7 +34,7 @@ Current routes:
 | 语气页 | `/tone` | 调整礼貌程度、正式程度、关系距离，并展示预览 |
 | 结果页 | `/results` | 展示三类输出，支持复制、反馈、收藏、分享、再润色、换风格 |
 | 历史页 | `/history` | 本地历史记录和收藏记录 |
-| 我的页 | `/profile` | 本地偏好、统计和 MVP 个人页 |
+| 我的页 | `/profile` | 本地统计、收藏摘要和偏好占位界面 |
 
 ## 4. Product Contract
 
@@ -85,6 +85,7 @@ The current MVP supports:
 - Deterministic fallback when model configuration or model call fails.
 - Generation metadata: `meta.source` distinguishes `model` and `fallback`; `meta.language` records resolved output language.
 - Copy, feedback, tracking, sharing fallback, favorite toggle, local recent history, history route, and profile route.
+- Results expose polish and style-switch actions, but their state preservation and exact generation semantics remain part of the current Phase 0 repair scope.
 
 ## 6. Storage and Write Paths
 
@@ -93,18 +94,22 @@ Current MVP write paths are intentionally lightweight:
 - Current flow state: Zustand store.
 - Recent history: browser local storage through `utils/recent-history.ts`.
 - Favorites: browser local storage through `utils/recent-history.ts`.
-- Preferences/statistics: local MVP storage keys only.
+- Statistics: local MVP storage.
+- Preferences: a staged storage key only; there is no completed user-facing read/write path.
 - Feedback: `POST /api/feedback` with lightweight logging.
 - Tracking: `POST /api/track` with lightweight logging.
 
 No database, login, cloud sync, or long-term memory is part of the current scope.
 
-## 7. Non Goals
+## 7. Current MVP Non Goals
 
-Do not add these without an approved spec:
+These remain outside the product direction:
 
 - Generic chatbot mode.
 - Generic writing platform.
+
+The following capabilities are stage-gated rather than authorized current work. Their direction, evidence requirements, and entry conditions live in `docs/product-evolution.md`:
+
 - Login, accounts, or cross-device sync.
 - Full database persistence.
 - Long-term user memory.
@@ -128,6 +133,7 @@ For product questions, this file is the only current PRD. Historical PRDs, old T
 
 For implementation details, use:
 
+- Problems, sequencing, and stage gates: `docs/product-evolution.md`
 - Routes, frontend, BFF, storage, and styling: `docs/architecture.md`
 - Verification: `docs/verification-guide.md`
 - Copy and prompts: `config/README.md`

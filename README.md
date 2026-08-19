@@ -15,7 +15,7 @@
 辅助页面：
 
 - `/history`：本地最近历史和收藏。
-- `/profile`：本地偏好、统计和 MVP 个人页。
+- `/profile`：本地统计、收藏摘要和偏好占位界面。
 
 服务端接口：
 
@@ -30,11 +30,11 @@
 当前是单体 Next.js MVP：
 
 - Zustand 保存当前转换流程状态。
-- 浏览器本地存储保存历史、收藏、偏好和统计。
+- 浏览器本地存储保存历史、收藏和统计；偏好目前仅有预留存储键，尚未形成用户可用闭环。
 - Next.js BFF 承载生成、反馈和行为记录。
 - 模型调用仅在服务端进行。
 
-未经明确批准，不增加登录、数据库、跨设备同步、独立后端、长期记忆、RAG、复杂 Agent、新 UI 系统、新状态管理器、新测试框架或 CI 服务。
+当前处于 Phase 0。Monorepo 和独立后端是已确认的后续方向，但在对应阶段获批前不得实施；数据库、账号、长期记忆、RAG、复杂 Agent、新 UI 系统、新状态管理器、新测试框架或 CI 服务同样受阶段门禁约束。当前实施权限以 `AGENTS.md` 为准，问题、顺序和进入条件见 `docs/product-evolution.md`。
 
 ## 技术栈
 
@@ -98,6 +98,7 @@ utils/        浏览器 API client 和本地存储工具
 
 - [AI 与协作者入口](./AGENTS.md)
 - [产品 PRD](./docs/product-prd.md)
+- [产品问题与演进](./docs/product-evolution.md)
 - [系统架构](./docs/architecture.md)
 - [验证指南](./docs/verification-guide.md)
 - [文案与 Prompt 配置](./config/README.md)

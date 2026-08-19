@@ -16,6 +16,8 @@ Before non-trivial work, read only the documents relevant to the task:
 4. `docs/verification-guide.md` - checks required for the changed surface.
 5. `config/README.md` - required before changing user copy, fallback copy, API messages, or prompts.
 
+Read `docs/product-evolution.md` for product planning, requirements, cross-module work, architecture decisions, or stage transitions. Ordinary localized fixes do not require it.
+
 For Next.js behavior changes, read the relevant local Next.js 16.2.7 documentation under `node_modules/next/dist/docs/` before editing.
 
 Ordinary work does not require a spec, design, tasks, or checklist document. Create or update formal documentation only when a durable product contract, architecture boundary, verification rule, configuration responsibility, or collaboration rule changes.
@@ -34,9 +36,24 @@ latest user instruction
 
 `.local-docs/`, screenshots, drafts, generated plans, old audits, and historical reports are local context only. They cannot become requirements unless the user confirms them and the relevant formal document is deliberately updated.
 
+`docs/product-evolution.md` records confirmed sequencing and stage gates for related planning work. It does not override the current product, architecture, or verification contracts; update those authority surfaces deliberately when a later stage is approved for implementation.
+
 The project-local collaboration skill at `.agents/skills/project-collaboration-operating-system/` helps audit or improve collaboration. It does not override this file or current product and architecture documents.
 
 If code and formal docs disagree, identify which one reflects the confirmed current behavior. Correct the smallest authoritative surface; do not create a new document bundle merely to record the mismatch.
+
+## Active Stage
+
+Current stage: **Phase 0 - core stability and evidence baseline**.
+
+During this stage:
+
+- implementation may address confirmed core-flow bugs, test coverage, AI quality baselines, dependency security, and immediate privacy risks;
+- product discovery and future architecture planning are allowed when explicitly requested;
+- do not migrate to a Monorepo, create an independent backend, add a database, or perform a broad UI rewrite;
+- future-stage content in `docs/product-evolution.md` is planning context, not implementation authorization.
+
+A confirmed long-term direction does not authorize implementation. Starting a later phase requires explicit user approval and corresponding updates to the current product, architecture, and collaboration documents.
 
 ## Current Scope
 
@@ -45,11 +62,11 @@ The product remains one Next.js App Router application using TypeScript, React 1
 Current persistence is intentionally lightweight:
 
 - flow and generation state: Zustand;
-- history, favorites, preferences, and statistics: browser local storage;
+- history, favorites, and statistics: browser local storage; preferences currently have only a staged storage key without a completed user-facing write path;
 - feedback and tracking: BFF routes with lightweight logging;
 - model access: server-side only, with deterministic fallback.
 
-Do not add these without explicit user approval:
+The following capabilities may be confirmed future directions but remain outside the active implementation stage. Do not implement them until the user explicitly approves entry into the corresponding stage:
 
 - login, accounts, cross-device sync, or full database persistence;
 - long-term memory, vector search, or RAG;

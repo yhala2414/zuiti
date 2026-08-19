@@ -2,7 +2,7 @@
 
 ## Scope
 
-Zuiti is one mobile-first Next.js App Router application. The current architecture intentionally avoids an independent backend, database, authentication system, RAG, complex Agent loop, or additional UI/state/test framework.
+During Phase 0, Zuiti remains one mobile-first Next.js App Router application. It does not yet include an independent backend, database, authentication system, RAG, complex Agent loop, or additional UI/state/test framework. Confirmed future directions and their entry gates are defined in `docs/product-evolution.md`.
 
 Primary inspection viewport: `375 x 750`.
 
@@ -15,7 +15,7 @@ Primary inspection viewport: `375 x 750`.
 | `/tone` | `app/tone/page.tsx` | Tone sliders, preview, and generation trigger |
 | `/results` | `app/results/page.tsx` | Three output modes and result actions |
 | `/history` | `app/history/page.tsx` | Local recent history and favorites |
-| `/profile` | `app/profile/page.tsx` | Local preferences and statistics surface |
+| `/profile` | `app/profile/page.tsx` | Local statistics, favorite summary, and staged preferences surface |
 | `POST /api/generate` | `app/api/generate/route.ts` | Validate request and return model/fallback/refusal/error result |
 | `POST /api/feedback` | `app/api/feedback/route.ts` | Validate and log lightweight feedback |
 | `POST /api/track` | `app/api/track/route.ts` | Validate and log lightweight analytics |
@@ -78,7 +78,8 @@ Main flow state lives in `stores/expression-flow-store.ts`, including scene, tar
 Current write paths:
 
 - recent history and favorites: `utils/recent-history.ts` -> local storage;
-- preferences and statistics: local MVP storage keys;
+- statistics: local MVP storage;
+- preferences: staged storage key without a completed user-facing read/write path;
 - feedback: `POST /api/feedback` -> lightweight logging;
 - tracking: `POST /api/track` -> lightweight logging.
 
@@ -125,3 +126,5 @@ For UI changes, inspect affected routes at `375 x 750` when browser tooling is a
 ## Documentation Sync
 
 Update this file only when routes, module responsibilities, data flow, API contracts, storage, model boundaries, copy/prompt ownership, or shared styling rules change. Ordinary feature notes, plans, and audits belong in ignored `.local-docs/`.
+
+Use `docs/product-evolution.md` for confirmed future directions, sequencing, and stage gates. Do not describe planned architecture here as already implemented.
