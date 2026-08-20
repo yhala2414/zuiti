@@ -1,11 +1,11 @@
 import { DecorativeIcon } from "./DecorativeIcon";
-import type { IconKind } from "./content";
+import type { ExpressionCatalogIcon } from "@/lib/catalog/expression-catalog";
 import styles from "./StyleCard.module.css";
 
 type StyleCardProps = {
   title: string;
   detail: string;
-  icon: IconKind;
+  icon: ExpressionCatalogIcon;
   active?: boolean;
   onClick?: () => void;
 };

@@ -35,14 +35,13 @@ test("home page renders local recent history when available and hides empty hist
 
 test("bottom navigation routes all current product sections", () => {
   const bottomNav = read("components/BottomNav.tsx");
-  const copy = read("config/copy/components.ts");
 
   assert.match(bottomNav, /usePathname/);
   assert.match(bottomNav, /useRouter/);
-  assert.match(copy, /href: "\/"/);
-  assert.match(copy, /href: "\/history"/);
-  assert.match(copy, /href: "\/profile"/);
-  assert.doesNotMatch(copy, /disabled: true/);
+  assert.match(bottomNav, /href: "\/"/);
+  assert.match(bottomNav, /href: "\/history"/);
+  assert.match(bottomNav, /href: "\/profile"/);
+  assert.doesNotMatch(bottomNav, /disabled: true/);
 });
 
 test("results loading state has an explicit visual indicator", () => {

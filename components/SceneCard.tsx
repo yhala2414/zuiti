@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { DecorativeIcon } from "./DecorativeIcon";
-import type { IconKind } from "./content";
+import type { ExpressionCatalogIcon } from "@/lib/catalog/expression-catalog";
 import styles from "./SceneCard.module.css";
 
 type SceneCardProps = {
   title: string;
   subtitle: string;
   href: string;
-  icon: IconKind;
+  icon: ExpressionCatalogIcon;
   context: string;
   onClick?: () => void;
 };

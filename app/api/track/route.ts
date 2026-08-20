@@ -1,4 +1,4 @@
-import { apiErrorCopy } from "@/config";
+import { apiErrorCopy } from "@/config/copy/api";
 import { jsonError } from "@/lib/domain/responses";
 import { trackEvent } from "@/lib/use-cases/track-event";
 import { TrackRequestSchema } from "@/lib/validators/track";

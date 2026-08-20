@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, type CSSProperties } from "react";
-import { resultCardCopy } from "@/config";
 import styles from "./ResultCard.module.css";
 
 type ResultCardProps = {
@@ -75,14 +74,14 @@ export function ResultCard({
           onClick={() => setExpanded((value) => !value)}
           aria-expanded={expanded}
         >
-          {expanded ? resultCardCopy.collapseAction : resultCardCopy.expandAction}
+          {expanded ? "收起" : "展开"}
           <span className={styles.chevron} aria-hidden="true" />
         </button>
       </header>
       <p className={`${styles.text} ${expanded ? styles.textExpanded : ""}`}>
         {text}
       </p>
-      <div className={styles.tags} aria-label={resultCardCopy.tagsAriaLabel}>
+      <div className={styles.tags} aria-label="表达标签">
         {tags.map((tag) => (
           <span key={tag}>{tag}</span>
         ))}
@@ -90,7 +89,7 @@ export function ResultCard({
       <div className={styles.actions}>
         <button type="button" className="result-action" onClick={onCopy}>
           <span className="action-icon copy" aria-hidden="true" />
-          {resultCardCopy.copyAction}
+          复制
         </button>
         <button
           type="button"
@@ -99,15 +98,15 @@ export function ResultCard({
           aria-pressed={usefulActive}
         >
           <span className="action-icon star" aria-hidden="true" />
-          {usefulActive ? resultCardCopy.usefulActiveAction : resultCardCopy.usefulAction}
+          {usefulActive ? "已记录" : "有用"}
         </button>
         <button type="button" className="result-action" onClick={onRegenerate}>
           <span className="action-icon refresh" aria-hidden="true" />
-          {resultCardCopy.regenerateAction}
+          再润色
         </button>
         <button type="button" className="result-action" onClick={onSwitchStyle}>
           <span className="action-icon switch" aria-hidden="true" />
-          {resultCardCopy.switchStyleAction}
+          换风格
         </button>
       </div>
     </article>

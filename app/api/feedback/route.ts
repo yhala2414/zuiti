@@ -1,4 +1,4 @@
-import { apiErrorCopy } from "@/config";
+import { apiErrorCopy } from "@/config/copy/api";
 import { jsonError } from "@/lib/domain/responses";
 import { submitFeedback } from "@/lib/use-cases/submit-feedback";
 import { FeedbackRequestSchema } from "@/lib/validators/feedback";

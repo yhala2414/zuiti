@@ -33,29 +33,36 @@ test("domain and store include PRD target context", () => {
 
 test("input page implements scene target style text validation", () => {
   const input = read("app/input/page.tsx");
-  const copy = read("config/copy/pages.ts");
 
-  assert.match(input, /targetOptionsByScene/);
-  assert.match(input, /exampleTextsByTarget/);
+  assert.match(input, /targetCatalogByScene/);
+  assert.match(input, /exampleTextByTarget/);
   assert.match(input, /maxLength=\{maxInputTextLength\}/);
   assert.match(input, /softInputTextLength/);
-  assert.match(input, /missingSceneToast/);
-  assert.match(input, /missingTargetToast/);
-  assert.match(input, /missingStyleToast/);
-  assert.match(copy, /overSoftLimitHint/);
+  assert.match(input, /请先选择沟通场景/);
+  assert.match(input, /请先选择沟通对象/);
+  assert.match(input, /请先选择表达风格/);
+  assert.match(input, /超过 300 字后可能影响转换聚焦/);
 });
 
 test("tone page shows context and debounces preview", () => {
   const tone = read("app/tone/page.tsx");
-  const copy = read("config/copy/pages.ts");
 
   assert.match(tone, /contextCard/);
   assert.match(tone, /window\.setTimeout/);
   assert.match(tone, /500/);
   assert.match(tone, /getContextDefaultSliders/);
-  assert.match(copy, /再软一点/);
-  assert.match(copy, /更正式/);
-  assert.match(copy, /更有边界感/);
+  assert.match(tone, /再软一点/);
+  assert.match(tone, /更正式/);
+  assert.match(tone, /更有边界感/);
+});
+
+test("typed local catalog covers the fixed product ids", () => {
+  const catalog = read("lib/catalog/expression-catalog.ts");
+
+  assert.match(catalog, /satisfies readonly SceneCatalogItem\[\]/);
+  assert.match(catalog, /satisfies Record<Scene, readonly TargetCatalogItem\[\]>/);
+  assert.match(catalog, /satisfies readonly StyleCatalogItem\[\]/);
+  assert.match(catalog, /satisfies Record<TargetId, string>/);
 });
 
 test("results page supports editable original, favorites, useful state, and style popup", () => {
