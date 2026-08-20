@@ -2,7 +2,7 @@
 
 ## Scope
 
-During Phase 0, Zuiti remains one mobile-first Next.js App Router application. It does not yet include an independent backend, database, authentication system, RAG, complex Agent loop, or additional UI/state/test framework. Confirmed future directions and their entry gates are defined in `docs/product-evolution.md`.
+Zuiti is currently one mobile-first Next.js App Router application. It does not include an independent backend, database, authentication system, RAG, complex Agent loop, or additional UI/state/test framework. This file describes only implemented architecture; confirmed future directions live in `docs/product-evolution.md`, and current implementation permission is owned by `AGENTS.md`.
 
 Primary inspection viewport: `375 x 750`.
 

@@ -1,12 +1,12 @@
-# 话到嘴边 产品 PRD
+# 话到嘴边产品需求文档
 
-## 1. Product Positioning
+## 1. 产品定位
 
 `话到嘴边` 是一个面向年轻人的场景表达转换器。它帮助用户把脑子里真实、直接、混乱、不好意思说出口的话，转成适合具体对象、具体场景发送、开口、汇报、拒绝、求助、解释或争取权益的表达版本。
 
 它不是通用 AI 写作工具，也不是聊天机器人。核心价值是降低年轻人在不对等关系中的表达成本和沟通风险。
 
-## 2. Target Users
+## 2. 目标用户
 
 - 学生：与导师、老师、辅导员、同学、学长学姐沟通。
 - 职场新人：与领导、前辈、HR、甲方、同事沟通。
@@ -15,19 +15,19 @@
 
 用户共性：知道自己想表达什么，但在高压力、关系不对等、需要拿捏分寸的时刻，需要快速得到更稳妥的说法。
 
-## 3. Current MVP Flow
+## 3. 当前 MVP 流程
 
 ```text
-Home
-  -> Input: scene + target + style + raw thought
-  -> Tone: politeness + formality + distance
-  -> Results: wechat + email + spoken
-  -> History/Profile: local MVP continuation
+首页
+  -> 输入页：场景 + 对象 + 风格 + 真实想法
+  -> 语气页：礼貌程度 + 正式程度 + 关系距离
+  -> 结果页：微信/IM + 邮件/书面 + 当面/语音
+  -> 历史页/我的页：延续本地 MVP 数据
 ```
 
-Current routes:
+当前路由：
 
-| Page | Route | Purpose |
+| 页面 | 路由 | 用途 |
 | --- | --- | --- |
 | 首页 | `/` | 产品入口、最近使用、热门风格、开始转换 |
 | 输入页 | `/input` | 选择场景、对象、风格，输入真实想法 |
@@ -36,104 +36,102 @@ Current routes:
 | 历史页 | `/history` | 本地历史记录和收藏记录 |
 | 我的页 | `/profile` | 本地统计、收藏摘要和偏好占位界面 |
 
-## 4. Product Contract
+## 4. 产品合同
 
-### Scenes
+### 场景
 
-- `student` - 学生沟通
-- `work` - 职场沟通
-- `social` - 社交沟通
-- `formal` - 正式事务
+- `student` — 学生沟通
+- `work` — 职场沟通
+- `social` — 社交沟通
+- `formal` — 正式事务
 
-### Targets
+### 沟通对象
 
-Targets are selected after scene selection and represent the communication counterpart, such as teacher, peer, leader, colleague, client, friend, partner, stranger, or institution-facing roles. Current target IDs live in `lib/domain/enums.ts` and the display mapping lives in `config/copy/content.ts`.
+用户选择场景后再选择沟通对象，用于表示老师、同学、领导、同事、客户、朋友、伴侣、陌生人或机构窗口等沟通对方。当前对象标识定义在 `lib/domain/enums.ts`，展示映射定义在 `config/copy/content.ts`。
 
-### Styles
+### 表达风格
 
-- `delay` - 先别急：体面延期，争取时间。
-- `refuse` - 婉拒了哈：优雅拒绝，不撕破脸。
-- `boundary` - 别甩给我：划清边界，避免背锅。
-- `followup` - 该交了吧：礼貌推进，让对方行动。
-- `decode` - 翻译一下：识别潜台词，看懂真实意思。
-- `sarcasm` - 阴阳一下：保留一点态度，但不能攻击或升级冲突。
+- `delay` — 先别急：体面延期，争取时间。
+- `refuse` — 婉拒了哈：优雅拒绝，不撕破脸。
+- `boundary` — 别甩给我：划清边界，避免背锅。
+- `followup` — 该交了吧：礼貌推进，让对方行动。
+- `decode` — 翻译一下：识别潜台词，看懂真实意思。
+- `sarcasm` — 阴阳一下：保留一点态度，但不能攻击或升级冲突。
 
-### Tone Sliders
+### 语气滑杆
 
-- `politeness` - 礼貌程度
-- `formality` - 正式程度
-- `distance` - 关系距离
+- `politeness` — 礼貌程度
+- `formality` — 正式程度
+- `distance` — 关系距离
 
-Range: `0-100`.
+取值范围：`0-100`。
 
-### Output Modes
+### 输出形式
 
-- `wechat` - 微信/IM 短句版
-- `email` - 邮件/书面正式版
-- `spoken` - 当面/语音沟通版
+- `wechat` — 微信/IM 短句版
+- `email` — 邮件/书面正式版
+- `spoken` — 当面/语音沟通版
 
-## 5. Current Behavior
+## 5. 当前行为
 
-The current MVP supports:
+当前 MVP 支持：
 
-- Home hot style entry and blank flow entry.
-- Scene and target selection.
-- Style selection with validated query preset.
-- Raw text validation using shared limits.
-- Tone preview based on generated result when available, otherwise local preview.
-- Server-side generation through `/api/generate`.
-- Deterministic fallback when model configuration or model call fails.
-- Generation metadata: `meta.source` distinguishes `model` and `fallback`; `meta.language` records resolved output language.
-- Copy, feedback, tracking, sharing fallback, favorite toggle, local recent history, history route, and profile route.
-- Results expose polish and style-switch actions, but their state preservation and exact generation semantics remain part of the current Phase 0 repair scope.
+- 从首页热门风格进入预设流程，或从空白状态开始转换。
+- 选择场景和沟通对象。
+- 选择表达风格，并校验查询参数中的预设值。
+- 使用共享长度限制校验用户原始输入。
+- 有生成结果时基于结果展示语气预览，否则使用本地预览。
+- 通过 `/api/generate` 在服务端生成内容。
+- 模型配置缺失或调用失败时返回确定性的本地 fallback。
+- 返回生成元数据：`meta.source` 区分 `model` 与 `fallback`，`meta.language` 记录最终采用的输出语言。
+- 支持复制、反馈、行为记录、分享降级、收藏切换、本地最近历史、历史页和我的页。
+- 结果页提供再润色和换风格操作，但其状态保留方式和确切生成语义仍由产品演进事项 B-03、B-06 跟踪。
 
-## 6. Storage and Write Paths
+## 6. 存储与写入路径
 
-Current MVP write paths are intentionally lightweight:
+当前 MVP 有意采用轻量写入路径：
 
-- Current flow state: Zustand store.
-- Recent history: browser local storage through `utils/recent-history.ts`.
-- Favorites: browser local storage through `utils/recent-history.ts`.
-- Statistics: local MVP storage.
-- Preferences: a staged storage key only; there is no completed user-facing read/write path.
-- Feedback: `POST /api/feedback` with lightweight logging.
-- Tracking: `POST /api/track` with lightweight logging.
+- 当前流程状态：Zustand store。
+- 最近历史：通过 `utils/recent-history.ts` 写入浏览器本地存储。
+- 收藏：通过 `utils/recent-history.ts` 写入浏览器本地存储。
+- 统计：本地 MVP 存储。
+- 偏好：目前只有预留存储键，尚未形成面向用户的完整读写路径。
+- 反馈：调用 `POST /api/feedback` 并进行轻量日志记录。
+- 行为记录：调用 `POST /api/track` 并进行轻量日志记录。
 
-No database, login, cloud sync, or long-term memory is part of the current scope.
+## 7. 当前 MVP 非目标
 
-## 7. Current MVP Non Goals
+以下能力不属于产品方向：
 
-These remain outside the product direction:
+- 通用聊天机器人模式。
+- 通用写作平台。
 
-- Generic chatbot mode.
-- Generic writing platform.
+以下能力不属于当前产品合同。可能的演进方向、证据要求和进入条件由 `docs/product-evolution.md` 维护，实施权限由 `AGENTS.md` 维护：
 
-The following capabilities are stage-gated rather than authorized current work. Their direction, evidence requirements, and entry conditions live in `docs/product-evolution.md`:
+- 登录、账号或跨设备同步。
+- 完整数据库持久化。
+- 长期用户记忆。
+- 向量搜索/RAG。
+- 独立后端服务。
+- 复杂 Agent 架构。
+- 管理或报表平台。
 
-- Login, accounts, or cross-device sync.
-- Full database persistence.
-- Long-term user memory.
-- Vector search/RAG.
-- Independent backend service.
-- Complex Agent architecture.
-- Admin/reporting platform.
+## 8. 用户体验原则
 
-## 8. UX Principles
+- 用户不需要自己编写 Prompt。
+- 产品文案应实用、直接，并与具体场景相关。
+- 结果必须可以直接使用，而不是只给抽象建议。
+- 工具应降低冲突风险，而不是激化冲突。
+- `sarcasm` 可以保留轻微锋芒，但不能变成侮辱、威胁或升级冲突的表达。
+- 用户可见的成功状态必须对应 state、storage、API 或 log 写入路径，否则必须明确标注为阶段性能力。
 
-- Users should not need to write prompts.
-- Product copy should be practical, direct, and scenario-specific.
-- Results must be directly usable, not abstract advice.
-- The tool should reduce conflict risk, not intensify it.
-- `sarcasm` may be lightly pointed, but must not become insulting, threatening, or escalatory.
-- User-visible success must correspond to a state/storage/API/log write path or be clearly staged.
+## 9. AI 协作说明
 
-## 9. AI Context Notes
+处理产品问题时，本文档是当前唯一有效的 PRD。历史 PRD、旧 Trae 规格和仓库根目录中的旧规划文档都不是产品权威。
 
-For product questions, this file is the only current PRD. Historical PRDs, old Trae specs, and old root-level planning docs are not product authority.
+实现细节分别由以下文档维护：
 
-For implementation details, use:
-
-- Problems, sequencing, and stage gates: `docs/product-evolution.md`
-- Routes, frontend, BFF, storage, and styling: `docs/architecture.md`
-- Verification: `docs/verification-guide.md`
-- Copy and prompts: `config/README.md`
+- 问题、顺序和阶段门禁：`docs/product-evolution.md`
+- 路由、前端、BFF、存储和样式：`docs/architecture.md`
+- 验证要求：`docs/verification-guide.md`
+- 文案和 Prompt：`config/README.md`

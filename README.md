@@ -25,16 +25,9 @@
 
 用户选择场景、对象、风格和语气后，可获得微信/IM、邮件/书面、当面/语音三类表达结果。模型不可用时返回确定性的本地 fallback，并通过 `meta.source` 保留真实来源。
 
-## 当前阶段边界
+## 当前阶段与协作入口
 
-当前是单体 Next.js MVP：
-
-- Zustand 保存当前转换流程状态。
-- 浏览器本地存储保存历史、收藏和统计；偏好目前仅有预留存储键，尚未形成用户可用闭环。
-- Next.js BFF 承载生成、反馈和行为记录。
-- 模型调用仅在服务端进行。
-
-当前处于 Phase 0。Monorepo 和独立后端是已确认的后续方向，但在对应阶段获批前不得实施；数据库、账号、长期记忆、RAG、复杂 Agent、新 UI 系统、新状态管理器、新测试框架或 CI 服务同样受阶段门禁约束。当前实施权限以 `AGENTS.md` 为准，问题、顺序和进入条件见 `docs/product-evolution.md`。
+当前实施权限和阶段边界以 `AGENTS.md` 为准；已确认问题、演进顺序和后续阶段进入条件见 `docs/product-evolution.md`。仓库当前实现见 `docs/architecture.md`，不要从 README 推断实施授权。
 
 ## 技术栈
 
@@ -97,20 +90,12 @@ utils/        浏览器 API client 和本地存储工具
 ## 文档导航
 
 - [AI 与协作者入口](./AGENTS.md)
+- [协作工作流与纠偏指南](./docs/collaboration-guide.md)
 - [产品 PRD](./docs/product-prd.md)
 - [产品问题与演进](./docs/product-evolution.md)
 - [系统架构](./docs/architecture.md)
 - [验证指南](./docs/verification-guide.md)
+- [本地 Web 验证指南](./docs/webapp-testing-guide.md)
 - [文案与 Prompt 配置](./config/README.md)
 
-团队文档只记录长期有效的产品、架构和验证事实。临时需求、计划、审计、测试报告、截图和未确认想法放在 ignored `.local-docs/`，不作为团队权威。
-
-## 开发约定摘要
-
-- 主要验收视口为 `375 x 750`。
-- 页面入口保持在 `app/**/page.tsx`。
-- 浏览器到 BFF 的请求统一经过 `utils/api-client.ts` 和 `utils/expression-api.ts`。
-- 用户可见文案与模型 prompt 分别收口到 `config/copy/**` 和 `config/prompts/**`。
-- 模型调用只允许服务端执行。
-- 保存、收藏、反馈、追踪等成功状态必须有 state、storage、API 或 log 写入路径。
-- 普通功能不要求创建 spec/design/tasks/checklist 文档套件。
+团队文档只记录长期有效的产品、架构、协作和验证事实。每个工作区按需自行建立 ignored `.local-docs/`，用于临时需求、计划、审计、参考材料和未确认想法；它不会随 Git 分发，也不作为团队权威。本地 Web 自动化使用独立的 ignored `.venv/`，具体路由由上述协作与验证指南维护，不在 README 维护规则副本。
