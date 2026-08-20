@@ -1,4 +1,4 @@
-import { createLocalizedFallbackCopy } from "@/config";
+import { createLocalizedFallbackCopy } from "@/config/copy/fallback";
 import { fallbackSafetyNote } from "@/lib/domain/defaults";
 import { outputModes, type GenerateResult, type GenerationMeta, type OutputMode } from "@/lib/domain/enums";
 import type { GenerateRequest } from "@/lib/validators/generate";

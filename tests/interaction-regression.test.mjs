@@ -38,12 +38,11 @@ test("disabled primary actions have explicit inactive styling", () => {
 
 test("results page implements favorite and share feedback", () => {
   const results = read("app/results/page.tsx");
-  const copy = read("config/copy/pages.ts");
 
   assert.match(results, /toggleFavoriteItem/);
   assert.match(results, /handleToggleFavorite/);
   assert.match(results, /navigator\.share/);
   assert.match(results, /shareFallback/);
-  assert.match(copy, /saveActiveAction/);
-  assert.match(copy, /shareCopied/);
+  assert.match(results, /已收藏/);
+  assert.match(results, /已复制分享文本/);
 });

@@ -5,7 +5,6 @@ import { BottomNav } from "@/components/BottomNav";
 import { MobileShell } from "@/components/MobileShell";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { TopBar } from "@/components/TopBar";
-import { profilePageCopy } from "@/config";
 import {
   type FavoriteItem,
   type UsageStats,
@@ -29,7 +28,7 @@ type ProfileSnapshot = {
 
 function formatDate(timestamp: number | null) {
   if (!timestamp) {
-    return profilePageCopy.emptyDate;
+    return "暂无";
   }
 
   return new Intl.DateTimeFormat("zh-CN", {
@@ -48,29 +47,29 @@ export default function ProfilePage() {
 
   return (
     <MobileShell className={styles.container}>
-      <TopBar title={profilePageCopy.title} subtitle={profilePageCopy.subtitle} backHref="/" />
+      <TopBar title="我的" subtitle="本机偏好与使用统计" backHref="/" />
 
       <main className={styles.content}>
         <section className={`soft-card ${styles.statsCard}`}>
-          <h2>{profilePageCopy.statsTitle}</h2>
+          <h2>使用统计</h2>
           <div className={styles.statsGrid}>
             <span>
               <strong>{stats.totalGenerations}</strong>
-              {profilePageCopy.totalGenerations}
+              转换次数
             </span>
             <span>
               <strong>{stats.favoriteCount}</strong>
-              {profilePageCopy.favoriteCount}
+              收藏数
             </span>
             <span>
               <strong>{formatDate(stats.lastUsedAt)}</strong>
-              {profilePageCopy.lastUsedAt}
+              最近使用
             </span>
           </div>
         </section>
 
         <section className={`soft-card ${styles.card}`}>
-          <h2>{profilePageCopy.favoritesTitle}</h2>
+          <h2>收藏</h2>
           {favorites.length > 0 ? (
             <div className={styles.favoriteList}>
               {favorites.map((favorite) => (
@@ -78,17 +77,17 @@ export default function ProfilePage() {
               ))}
             </div>
           ) : (
-            <p>{profilePageCopy.emptyDate}</p>
+            <p>暂无</p>
           )}
         </section>
 
         <section className={`soft-card ${styles.card}`}>
-          <h2>{profilePageCopy.prefsTitle}</h2>
-          <p>{profilePageCopy.prefsDescription}</p>
+          <h2>偏好</h2>
+          <p>当前 MVP 使用本机存储，不需要登录。</p>
         </section>
 
         <PrimaryButton href="/input" sparkle>
-          {profilePageCopy.startAction}
+          开始一次新的转换
         </PrimaryButton>
       </main>
 

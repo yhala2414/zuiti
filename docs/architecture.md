@@ -44,13 +44,14 @@ Pages do not issue standalone BFF `fetch` or axios calls. Browser BFF access goe
 - `stores/**`: cross-page Zustand state.
 - `utils/**`: browser API wrappers, content mappings, and local storage.
 - `lib/domain/**`: enums, defaults, contracts, and errors.
+- `lib/catalog/**`: typed local scene, target, style, and example display records consumed by pages.
 - `lib/validators/**`: zod validation for external input.
 - `lib/use-cases/**`: business orchestration.
 - `lib/context/**`: request context and language inference.
 - `lib/safety/**`: pre- and post-generation safety checks.
 - `lib/llm/**`: model creation, prompts binding, parsing, normalization.
 - `lib/analytics/**`: lightweight event/log helpers.
-- `config/copy/**`: user-visible copy, fallback content, and API messages.
+- `config/copy/**`: shared API messages and deterministic fallback content.
 - `config/prompts/**`: model-facing prompt strategy.
 
 Route pages are composition roots. Keep page-local behavior local until reuse is confirmed; prefer existing shared components before adding abstractions.
@@ -103,7 +104,9 @@ Allowed LangChain use is limited to prompt templates, server-side model invocati
 
 ## Copy and Prompt Ownership
 
-- Directly visible user text belongs in `config/copy/**`.
+- Page- and component-specific UI text stays with the JSX that gives it structural meaning.
+- Typed scene, target, style, and example display records belong in `lib/catalog/**`; stable IDs remain in `lib/domain/**`.
+- Shared API messages and deterministic fallback output belong in `config/copy/**`.
 - Model-facing instructions belong in `config/prompts/**`.
 - Display labels and model labels for the same concept may require coordinated changes in both locations.
 - Prompt text must not be embedded in UI components.

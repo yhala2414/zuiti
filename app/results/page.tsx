@@ -7,8 +7,7 @@ import { PrimaryButton } from "@/components/PrimaryButton";
 import { ResultCard } from "@/components/ResultCard";
 import { StyleCard } from "@/components/StyleCard";
 import { TopBar } from "@/components/TopBar";
-import { results, styles as styleOptions } from "@/components/content";
-import { resultsPageCopy } from "@/config";
+import { styleCatalog } from "@/lib/catalog/expression-catalog";
 import {
   createRequestKey,
   useExpressionFlowStore,
@@ -28,10 +27,38 @@ import {
 import { getStyleByIndex, getStyleIndex } from "@/utils/content-mapping";
 import styles from "./page.module.css";
 
-const resultMeta = Object.fromEntries(results.map((item) => [item.mode, item])) as Record<
-  OutputMode,
-  (typeof results)[number]
->;
+const resultMeta = {
+  wechat: {
+    label: "微信短句版",
+    tone: "lavender",
+    icon: "wechat",
+    fit: "适合微信/IM",
+  },
+  email: {
+    label: "邮件正式版",
+    tone: "blue",
+    icon: "mail",
+    fit: "适合邮件/书面沟通",
+  },
+  spoken: {
+    label: "当面沟通版",
+    tone: "pink",
+    icon: "face",
+    fit: "适合当面沟通",
+  },
+} as const satisfies Record<OutputMode, {
+  label: string;
+  tone: "lavender" | "blue" | "pink";
+  icon: "wechat" | "mail" | "face";
+  fit: string;
+}>;
+
+const languageLabels = {
+  "zh-CN": "中文",
+  en: "English",
+  ja: "日本語",
+  ko: "한국어",
+} as const;
 
 function getRecommendedText(result: GenerateResult, mode: OutputMode) {
   const output = result[mode];
@@ -195,7 +222,7 @@ export default function ResultsPage() {
     const copiedText = getRecommendedText(generatedResult, mode);
     try {
       await copyTextWithFallback(copiedText);
-      Toast.show({ content: resultsPageCopy.copySuccess });
+      Toast.show({ content: "已复制" });
       void trackEvent({
         sessionId,
         event: "copy_result",
@@ -205,13 +232,13 @@ export default function ResultsPage() {
         },
       });
     } catch {
-      Toast.show({ content: resultsPageCopy.copyFailed });
+      Toast.show({ content: "复制失败，请手动长按复制" });
     }
   };
 
   const handleToggleFavorite = () => {
     if (!requestKey || !generatedResult || !draft) {
-      Toast.show({ content: resultsPageCopy.favoriteUnavailable });
+      Toast.show({ content: "生成结果后才能收藏" });
       return;
     }
 
@@ -227,12 +254,12 @@ export default function ResultsPage() {
         result: generatedResult,
       }),
     );
-    Toast.show({ content: nextFavorite ? resultsPageCopy.favoriteSaved : resultsPageCopy.favoriteRemoved });
+    Toast.show({ content: nextFavorite ? "已收藏到本机" : "已取消收藏" });
   };
 
   const handleShare = async () => {
     if (!generatedResult) {
-      Toast.show({ content: resultsPageCopy.favoriteUnavailable });
+      Toast.show({ content: "生成结果后才能收藏" });
       return;
     }
 
@@ -241,12 +268,12 @@ export default function ResultsPage() {
     try {
       if (navigator.share) {
         await navigator.share({
-          title: resultsPageCopy.title,
+          title: "转换结果",
           text: shareFallback,
         });
       } else {
         await copyTextWithFallback(shareFallback);
-        Toast.show({ content: resultsPageCopy.shareCopied });
+        Toast.show({ content: "已复制分享文本" });
       }
 
       void trackEvent({
@@ -257,16 +284,16 @@ export default function ResultsPage() {
     } catch {
       try {
         await copyTextWithFallback(shareFallback);
-        Toast.show({ content: resultsPageCopy.shareCopied });
+        Toast.show({ content: "已复制分享文本" });
       } catch {
-        Toast.show({ content: resultsPageCopy.shareFailed });
+        Toast.show({ content: "分享失败，请稍后再试" });
       }
     }
   };
 
   const handleUseful = (mode: OutputMode) => {
     setUsefulModes((current) => new Set(current).add(mode));
-    Toast.show({ content: resultsPageCopy.usefulSaved });
+    Toast.show({ content: "已记录反馈" });
     void sendFeedback({
       sessionId,
       resultId: `${sessionId}-${mode}`,
@@ -311,33 +338,33 @@ export default function ResultsPage() {
   return (
     <MobileShell className={styles.container}>
       <TopBar
-        title={resultsPageCopy.title}
-        subtitle={resultsPageCopy.subtitle}
+        title="转换结果"
+        subtitle="根据你的当前草稿实时生成结果"
         backHref="/tone"
         actions={[
           {
-            label: isFavorite ? resultsPageCopy.saveActiveAction : resultsPageCopy.saveAction,
+            label: isFavorite ? "已收藏" : "收藏",
             icon: "star",
             active: isFavorite,
             onClick: handleToggleFavorite,
           },
-          { label: resultsPageCopy.shareAction, icon: "share", onClick: () => void handleShare() },
+          { label: "分享", icon: "share", onClick: () => void handleShare() },
         ]}
       />
 
       <div className={styles.content}>
         <section className={`soft-card ${styles.originalCard}`}>
           <div className={styles.originalHeader}>
-            <span>{resultsPageCopy.originalLabel}</span>
+            <span>原话</span>
             <button type="button" onClick={handleOriginalRegenerate}>
-              {resultsPageCopy.editOriginalAction}
+              重新生成
             </button>
           </div>
           <TextArea
             className={styles.originalInput}
             value={editableText}
             onChange={setEditableText}
-            placeholder={resultsPageCopy.emptyOriginal}
+            placeholder="还没有输入原话，请先回到输入页补充。"
             rows={3}
             maxLength={500}
             showCount
@@ -346,18 +373,18 @@ export default function ResultsPage() {
 
         {!draft ? (
           <section className={`soft-card ${styles.stateCard}`}>
-            <h2>{resultsPageCopy.missingDraftTitle}</h2>
-            <p>{resultsPageCopy.missingDraftDescription}</p>
+            <h2>还不能生成结果</h2>
+            <p>请先选择沟通场景，并输入至少 2 个字的真实想法。</p>
             <PrimaryButton href="/input" sparkle>
-              {resultsPageCopy.missingDraftAction}
+              返回输入
             </PrimaryButton>
           </section>
         ) : null}
 
         {draft && generation.status === "loading" ? (
           <section className={`soft-card ${styles.stateCard} ${styles.loadingCard}`}>
-            <h2>{resultsPageCopy.loadingTitle}</h2>
-            <p>{resultsPageCopy.loadingDescription}</p>
+            <h2>正在生成</h2>
+            <p>正在把你的真实想法转换成更适合发送、书写和当面表达的版本。</p>
             <span className={styles.loadingDots} aria-hidden="true">
               <i />
               <i />
@@ -368,20 +395,20 @@ export default function ResultsPage() {
 
         {draft && generation.status === "refused" ? (
           <section className={`soft-card ${styles.stateCard}`}>
-            <h2>{resultsPageCopy.refusedTitle}</h2>
-            <p>{generation.errorMessage ?? resultsPageCopy.refusedDefaultMessage}</p>
+            <h2>这句话需要换个目标</h2>
+            <p>{generation.errorMessage ?? "当前表达风险较高，请改为描述事实、影响和诉求。"}</p>
             <PrimaryButton href="/input" sparkle>
-              {resultsPageCopy.refusedAction}
+              修改原话
             </PrimaryButton>
           </section>
         ) : null}
 
         {draft && generation.status === "fail" ? (
           <section className={`soft-card ${styles.stateCard}`}>
-            <h2>{resultsPageCopy.failTitle}</h2>
-            <p>{generation.errorMessage ?? resultsPageCopy.failDefaultMessage}</p>
+            <h2>生成暂时失败</h2>
+            <p>{generation.errorMessage ?? "服务暂时不可用，请稍后再试。"}</p>
             <button type="button" className="primary-button" onClick={handleRegenerate}>
-              <span>{resultsPageCopy.retryAction}</span>
+              <span>重试一次</span>
             </button>
           </section>
         ) : null}
@@ -389,13 +416,13 @@ export default function ResultsPage() {
         {draft && generatedResult && successStatus ? (
           <section className={`soft-card ${styles.stateCard} ${styles.successState}`}>
             <div className={styles.stateHeader}>
-              <h2>{resultsPageCopy.successTitle}</h2>
+              <h2>表达版本已生成</h2>
             </div>
-            <p>{resultsPageCopy.successDescription}</p>
+            <p>可以直接复制使用，也可以继续调整语气或换一种风格。</p>
             <div className={styles.metaRow}>
               <span className={styles.metaPill}>
-                {resultsPageCopy.metaLanguageLabel}：
-                {resultsPageCopy.languageLabels[generatedResult.meta.language]}
+                输出语言：
+                {languageLabels[generatedResult.meta.language]}
               </span>
             </div>
           </section>
@@ -423,17 +450,17 @@ export default function ResultsPage() {
         {cards.length > 0 && successStatus ? (
           <button type="button" className={styles.compareButton}>
             <span aria-hidden="true" />
-            {resultsPageCopy.compareAction}
+            查看“原话 → 优化版”的变化点
           </button>
         ) : null}
       </div>
 
       <div className={styles.bottomActions}>
         <a href="/tone" className={styles.secondaryButton}>
-          {resultsPageCopy.adjustToneAction}
+          再调整语气
         </a>
         <button type="button" className="primary-button" onClick={() => setStylePopupOpen(true)}>
-          <span>{resultsPageCopy.switchStyleAction}</span>
+          <span>换一种风格</span>
         </button>
       </div>
 
@@ -443,9 +470,9 @@ export default function ResultsPage() {
         bodyClassName={styles.stylePopup}
       >
         <section>
-          <h2>{resultsPageCopy.styleSheetTitle}</h2>
+          <h2>换一种表达风格</h2>
           <div className={styles.stylePopupList}>
-            {styleOptions.map((styleOption, index) => (
+            {styleCatalog.map((styleOption, index) => (
               <StyleCard
                 key={styleOption.key}
                 title={styleOption.title}

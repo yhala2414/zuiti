@@ -1,7 +1,7 @@
-import type { IconKind } from "./content";
+import type { ExpressionCatalogIcon } from "@/lib/catalog/expression-catalog";
 
 type DecorativeIconProps = {
-  kind: IconKind;
+  kind: ExpressionCatalogIcon;
   size?: "sm" | "md" | "lg" | "hero";
 };
 

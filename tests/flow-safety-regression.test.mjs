@@ -7,12 +7,12 @@ function read(path) {
 }
 
 test("results page copy does not expose model or fallback implementation details", () => {
-  const pageCopy = read("config/copy/pages.ts");
+  const pageCopy = read("app/results/page.tsx");
 
   assert.doesNotMatch(pageCopy, /已切到演示兜底/);
   assert.doesNotMatch(pageCopy, /真实模型已生成/);
   assert.doesNotMatch(pageCopy, /生成来源/);
-  assert.doesNotMatch(pageCopy, /fallback/);
+  assert.doesNotMatch(pageCopy, /["']fallback["']/);
 });
 
 test("flow draft construction uses the shared minimum input length", () => {

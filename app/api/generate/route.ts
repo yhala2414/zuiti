@@ -1,4 +1,4 @@
-import { apiErrorCopy } from "@/config";
+import { apiErrorCopy } from "@/config/copy/api";
 import { jsonError } from "@/lib/domain/responses";
 import { generateExpression } from "@/lib/use-cases/generate-expression";
 import { GenerateRequestSchema } from "@/lib/validators/generate";

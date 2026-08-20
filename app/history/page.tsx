@@ -7,7 +7,6 @@ import { BottomNav } from "@/components/BottomNav";
 import { MobileShell } from "@/components/MobileShell";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { TopBar } from "@/components/TopBar";
-import { historyPageCopy } from "@/config";
 import { useExpressionFlowStore } from "@/stores/expression-flow-store";
 import {
   clearRecentHistoryItems,
@@ -51,12 +50,12 @@ export default function HistoryPage() {
   return (
     <MobileShell className={styles.container}>
       <TopBar
-        title={historyPageCopy.title}
-        subtitle={historyPageCopy.subtitle}
+        title="历史记录"
+        subtitle="保存在本机的最近 50 次转换"
         backHref="/"
         actions={[
           {
-            label: historyPageCopy.clearAction,
+            label: "清空",
             icon: "trash",
             onClick: () => {
               clearRecentHistoryItems();
@@ -69,10 +68,10 @@ export default function HistoryPage() {
       <main className={styles.content}>
         {items.length === 0 ? (
           <section className={`soft-card ${styles.emptyCard}`}>
-            <h2>{historyPageCopy.emptyTitle}</h2>
-            <p>{historyPageCopy.emptyDescription}</p>
+            <h2>还没有历史记录</h2>
+            <p>完成一次转换后，这里会显示原话、场景和推荐表达。</p>
             <PrimaryButton href="/input" sparkle>
-              {historyPageCopy.startAction}
+              开始转换
             </PrimaryButton>
           </section>
         ) : (
@@ -81,12 +80,12 @@ export default function HistoryPage() {
               <article key={item.id} className={`soft-card ${styles.historyCard}`}>
                 <div className={styles.cardHeader}>
                   <time>{formatTime(item.updatedAt)}</time>
-                  {item.isFavorite ? <span>{historyPageCopy.favoriteLabel}</span> : null}
+                  {item.isFavorite ? <span>已收藏</span> : null}
                 </div>
                 <h2>{item.originalText}</h2>
                 <p>{item.summary}</p>
                 <button type="button" onClick={() => handleOpen(item)}>
-                  {historyPageCopy.openAction}
+                  查看
                 </button>
               </article>
             ))}

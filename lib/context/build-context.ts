@@ -4,7 +4,7 @@ import {
   promptLanguageLabels,
   promptSceneLabels,
   promptStyleLabels,
-} from "@/config";
+} from "@/config/prompts";
 import type { ResolvedLanguage } from "@/lib/domain/enums";
 import type { GenerateRequest } from "@/lib/validators/generate";
 import { inferPrimaryLanguage } from "./infer-language";

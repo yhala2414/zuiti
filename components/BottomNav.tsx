@@ -2,8 +2,14 @@
 
 import { TabBar } from "antd-mobile";
 import { usePathname, useRouter } from "next/navigation";
-import { bottomNavCopy } from "@/config";
 import styles from "./BottomNav.module.css";
+
+const navItems = [
+  { key: "home", label: "首页", icon: "home", href: "/" },
+  { key: "note", label: "历史", icon: "note", href: "/history" },
+  { key: "meter", label: "语气", icon: "meter", href: "/tone" },
+  { key: "user", label: "我的", icon: "user", href: "/profile" },
+] as const;
 
 function getActiveKey(pathname: string) {
   if (pathname === "/tone") {
@@ -29,7 +35,7 @@ export function BottomNav() {
         activeKey={getActiveKey(pathname)}
         className={styles.tabBar}
         onChange={(key) => {
-          const item = bottomNavCopy.items.find((navItem) => navItem.key === key);
+          const item = navItems.find((navItem) => navItem.key === key);
 
           if (!item) {
             return;
@@ -40,7 +46,7 @@ export function BottomNav() {
           }
         }}
       >
-        {bottomNavCopy.items.map((item) => (
+        {navItems.map((item) => (
           <TabBar.Item
             key={item.key}
             icon={

@@ -1,5 +1,5 @@
 import axios, { AxiosHeaders, type AxiosError, type InternalAxiosRequestConfig } from "axios";
-import { apiErrorCopy } from "@/config";
+import { apiErrorCopy } from "@/config/copy/api";
 
 type ApiFailure = {
   ok: false;
